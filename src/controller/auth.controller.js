@@ -1,10 +1,12 @@
-import { User } from "../model/auth.model.js";
+import { Auth } from "../model/auth.model.js";
+import {sendOTP} from "../util/email.util.js"
+import {generateOTP} from "../util/otp.util.js"
 import jwt from "jsonwebtoken";
 
 // generate token
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-    const user = await User.findOne(userId);
+    const user = await Auth.findOne(userId);
     const accessToken = await user.generateAccessToken();
     const refreshToken = await user.generateRefreshToken();
 
@@ -20,6 +22,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
+// register user
 const userRegister = async (req, res) => {
   try {
     const { name, email, password, dateOfBirth } = req.body;
@@ -51,7 +54,7 @@ const userRegister = async (req, res) => {
     }
   
   //   check existed user
-    const existedUser = await User.findOne({
+    const existedUser = await Auth.findOne({
       $or: [{ email }, { name }],
     });
   
@@ -63,7 +66,7 @@ const userRegister = async (req, res) => {
     }
   
   //   create new user
-    const user = await User.create({
+    const user = await Auth.create({
       name,
       email,
       password,
@@ -71,7 +74,7 @@ const userRegister = async (req, res) => {
     });
   
   //   remove password and refreshToken field from response
-  const createdUser = await User.findById(user._id).select("-password -refreshToken")
+  const createdUser = await Auth.findById(user._id).select("-password -refreshToken")
   
   return res.status(201).json(
       {
@@ -90,4 +93,65 @@ const userRegister = async (req, res) => {
   }
 };
 
-export { generateAccessAndRefreshToken, userRegister };
+// login user
+const userLogin = async (req, res)=>{
+  const {email, password} = req.body;
+
+  if(!email || !password){
+    return res.status(400).json({
+      status: false,
+      message: error.message
+    });
+  }
+
+  const user = await Auth.findOne({
+    $or: [{ email }, { password }],
+  });
+
+  // if user not found then throw error
+  if (!user) {
+    return res.status(400).json({
+      status: false,
+      message: error.message
+    });
+  }
+
+  // compare the password
+  const isPasswordCorrect = await user.isPasswordValid(password);
+  if (!isPasswordCorrect) {
+    return res.status(400).json({
+      status: false,
+      message: error.message
+    });
+  }
+
+  // implement access and refresh token
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
+
+  // again remove password and refreshToken filed from response
+  const loggedUser = await Auth.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  // set the access token in the response header
+  res.setHeader('Authorization', `Bearer ${accessToken}`);
+
+  // return the user data and refresh token
+  return res.status(201).json(
+    {
+      status: true,
+      message: "User logged in successfully",
+      data: loggedUser,
+      refreshToken
+    }
+  )
+}
+
+// Logout
+
+
+
+
+export { userRegister, userLogin };
