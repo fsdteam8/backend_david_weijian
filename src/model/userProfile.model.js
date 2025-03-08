@@ -15,10 +15,23 @@ const userProfileSchema = new Schema({
         type: String,
         unique: true
     },
+    avatar: {
+        type: String,
+        default: ""
+    },
     dateOfBirth: {
         type: Date,
         required: true
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    },
+
     
 });
 
