@@ -231,7 +231,9 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
-      return res.status(400).json({ status: false, message: "Email is required" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Email is required" });
     }
 
     const user = await Auth.findOne({ email });
@@ -258,25 +260,27 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// const verifyOtp = async (req, res) => {
-//   try {
-//     const { email, otp } = req.body;
+const verifyOtp = async (req, res) => {
+  try {
+    const {otp } = req.body;
 
-//     const user = await User.findOne({ email });
-//     if (!user || user.otp !== otp || new Date() > user.otpExpires) {
-//       return res.status(400).json({ message: "Invalid or expired OTP" });
-//     }
+    // check the user and the otp is inalid or expire
+    const user = await Auth.findOne({ otp });
+    if (user.otp !== otp || new Date() > user.otpExpires) {
+      return res.status(400).json({status: false, message: "Invalid or expired OTP" });
+    }
 
-//     // OTP verified successfully
-//     user.otp = undefined;
-//     user.otpExpires = undefined;
-//     await user.save();
+    // If verified then undefine otp details from database
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
 
-//     res.json({ message: "OTP verified successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
+    return res.json({ status: true, message: "OTP verified successfully" });
+  } catch (error) {
+    console.log("Error in verifyOtp:", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
 
 // const resetPassword = async (req, res) => {
 //   try {
@@ -295,4 +299,11 @@ const forgotPassword = async (req, res) => {
 //   }
 // };
 
-export { userRegister, userLogin, userLogout, refreshAccessToken, forgotPassword };
+export {
+  userRegister,
+  userLogin,
+  userLogout,
+  refreshAccessToken,
+  forgotPassword,
+  verifyOtp,
+};
