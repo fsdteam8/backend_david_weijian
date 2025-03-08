@@ -1,5 +1,7 @@
 import { Auth } from "../model/auth.model.js";
 import { UserProfile } from "../model/userProfile.model.js";
+import { uploadOnCloudinary } from "../util/cloudinary.util.js";
+import { deleteFromCloudinary } from "../util/cloudinaryDestroy.util.js";
 
 // Get user profile
 const getUserProfile = async (req, res) => {
@@ -39,75 +41,59 @@ const getUserProfile = async (req, res) => {
 };
 
 // Update User Profile (name, email, phone, dateOfBirth)
+
 const updateUserProfile = async (req, res) => {
   try {
     const { name, email, phone, dateOfBirth } = req.body;
     const userId = req.user._id;
 
-    // Check if the user exists
-    const user = await Auth.findById(userId);
-    if (!user) {
-      return res.status(404).json({ status: false, message: "User not found" });
-    }
-
-    // Check if the user already has a profile
+    // Find the user's profile
     let userProfile = await UserProfile.findOne({ user: userId });
+
     if (!userProfile) {
-      return res
-        .status(404)
-        .json({ status: false, message: "User profile not found" });
+      return res.status(404).json({ message: "User profile not found" });
     }
 
-    let updatedFields = false;
+    // Handle avatar upload
+    if (req.file) {
+      const filePath = req.file.path;
 
-    // Update fields individually
-    if (name) {
-      userProfile.name = name;
-      user.name = name;
-      updatedFields = true;
-    }
-
-    if (email) {
-      userProfile.email = email;
-      user.email = email;
-      updatedFields = true;
-    }
-
-    if (phone) {
-      if (!userProfile.phone) {
-        userProfile.phone = phone;
-      } else {
-        userProfile.phone = phone;
+      // Upload new avatar to Cloudinary
+      const cloudinaryResponse = await uploadOnCloudinary(filePath);
+      if (!cloudinaryResponse) {
+        return res
+          .status(500)
+          .json({ message: "Failed to upload image to Cloudinary" });
       }
-      updatedFields = true;
+
+      // Delete the old avatar
+      if (userProfile.avatar) {
+        const publicId = userProfile.avatar.split("/").pop().split(".")[0];
+        await deleteFromCloudinary(publicId);
+      }
+
+      // Update user profile with avatar URL
+      userProfile.avatar = cloudinaryResponse.url;
     }
 
-    if (dateOfBirth) {
-      userProfile.dateOfBirth = dateOfBirth;
-      user.dateOfBirth = dateOfBirth;
-      updatedFields = true;
-    }
-
-    // If no fields updated return false
-    if (!updatedFields) {
-      return res
-        .status(400)
-        .json({ status: false, message: "No fields to update" });
-    }
-
-    // Set updateAt time forn current user
+    // Update other user profile fields
+    userProfile.name = name || userProfile.name;
+    userProfile.email = email || userProfile.email;
+    userProfile.phone = phone || userProfile.phone;
+    userProfile.dateOfBirth = dateOfBirth || userProfile.dateOfBirth;
     userProfile.updatedAt = new Date();
+
+    // Save updated profile
     await userProfile.save();
-    await user.save();
 
     return res.status(200).json({
       status: true,
-      message: "User Profile updated successfully",
-      data: userProfile,
+      message: "Profile updated successfully",
+      userProfile,
     });
   } catch (error) {
-    console.error("Error while update profile", error);
-    res.status(500).json({ status: false, message: error.message });
+    console.error("Error updating profile:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
