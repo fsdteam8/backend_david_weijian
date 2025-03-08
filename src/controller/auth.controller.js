@@ -319,24 +319,38 @@ const resendOTP = async (req, res) => {
   }
 };
 
+// Reset pass
+const resetPassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    const email = req.user.email
+    const user = await Auth.findOne({email});
+    if (!user)
+      return res.status(404).json({ status: false, message: "User not found" });
+
+    // Compare the pass
+    const isOldPasswordCorrect = await user.isPasswordValid(oldPassword)
+    if (!isOldPasswordCorrect)
+      return res.status(400).json({ status: false, message: "Old password is incorrect" });
 
 
-// const resetPassword = async (req, res) => {
-//   try {
-//     const { email, newPassword } = req.body;
+    // Update the user password
+    user.password = newPassword;
+    await user.save();
 
-//     const user = await User.findOne({ email });
-//     if (!user) return res.status(404).json({ message: "User not found" });
+    // Send a success response
+    return res.status(200).json({
+      status: true,
+      message: "Password updated successfully"
+    });
 
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-//     user.password = hashedPassword;
-//     await user.save();
+  } catch (error) {
+    console.log("Error while reseting password: " , error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
 
-//     res.json({ message: "Password reset successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
 
 export {
   userRegister,
@@ -345,5 +359,6 @@ export {
   refreshAccessToken,
   forgotPassword,
   verifyOtp,
-  resendOTP
+  resendOTP,
+  resetPassword
 };
