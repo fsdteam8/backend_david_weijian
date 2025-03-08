@@ -31,6 +31,12 @@ const authSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  otp: { 
+    type: String 
+  },  
+  otpExpires: { 
+    type: Date 
+  }, 
   createdAt: {
     type: Date,
     default: Date.now,
