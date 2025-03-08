@@ -1,5 +1,5 @@
 import { Auth } from "../model/auth.model.js";
-import { sendOTP } from "../util/email.util.js";
+import { sendMail } from "../util/email.util.js";
 import { generateOTP } from "../util/otp.util.js";
 import jwt from "jsonwebtoken";
 
@@ -36,7 +36,9 @@ const userRegister = async (req, res) => {
     }
 
     // check the fields are filled or not
-    if ([name, email, password, dateOfBirth].some((field) => field?.trim() === "")) {
+    if (
+      [name, email, password, dateOfBirth].some((field) => field?.trim() === "")
+    ) {
       return res.status(400).json({
         status: false,
         message: "All fields are required.",
@@ -65,7 +67,9 @@ const userRegister = async (req, res) => {
     const user = await Auth.create({ name, email, password, dateOfBirth });
 
     // remove password and refreshToken field from response
-    const createdUser = await Auth.findById(user._id).select("-password -refreshToken");
+    const createdUser = await Auth.findById(user._id).select(
+      "-password -refreshToken"
+    );
 
     return res.status(201).json({
       status: true,
@@ -73,6 +77,7 @@ const userRegister = async (req, res) => {
       data: createdUser,
     });
   } catch (error) {
+    console.error("Error while registering a user:", error);
     return res.status(500).json({
       status: false,
       message: error.message,
@@ -82,51 +87,63 @@ const userRegister = async (req, res) => {
 
 // login user
 const userLogin = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  if (!email || !password) {
+    if (!email || !password) {
+      return res.status(400).json({
+        status: false,
+        message: "Email and password are required.",
+      });
+    }
+
+    const user = await Auth.findOne({ email });
+
+    // if user not found then throw error
+    if (!user) {
+      return res.status(400).json({
+        status: false,
+        message: "User not found.",
+      });
+    }
+
+    // compare the password
+    const isPasswordCorrect = await user.isPasswordValid(password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({
+        status: false,
+        message: "Incorrect password.",
+      });
+    }
+
+    // implement access and refresh token
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
+
+    // again remove password and refreshToken field from response
+    const loggedUser = await Auth.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    // set the access token in the response header
+    res.setHeader("Authorization", `Bearer ${accessToken}`);
+
+    // return the user data and refresh token
+    return res.status(200).json({
+      status: true,
+      message: "User logged in successfully",
+      data: loggedUser,
+      refreshToken,
+      accessToken,
+    });
+  } catch (error) {
+    console.error("Error while login:", error);
     return res.status(400).json({
       status: false,
-      message: "Email and password are required.",
+      message: error.message,
     });
   }
-
-  const user = await Auth.findOne({ email });
-
-  // if user not found then throw error
-  if (!user) {
-    return res.status(400).json({
-      status: false,
-      message: "User not found.",
-    });
-  }
-
-  // compare the password
-  const isPasswordCorrect = await user.isPasswordValid(password);
-  if (!isPasswordCorrect) {
-    return res.status(400).json({
-      status: false,
-      message: "Incorrect password.",
-    });
-  }
-
-  // implement access and refresh token
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
-
-  // again remove password and refreshToken field from response
-  const loggedUser = await Auth.findById(user._id).select("-password -refreshToken");
-
-  // set the access token in the response header
-  res.setHeader('Authorization', `Bearer ${accessToken}`);
-
-  // return the user data and refresh token
-  return res.status(200).json({
-    status: true,
-    message: "User logged in successfully",
-    data: loggedUser,
-    refreshToken,
-    accessToken,
-  });
 };
 
 // logout user
@@ -135,14 +152,19 @@ const userLogout = async (req, res) => {
     const user = req.user;
 
     if (!user) {
-      return res.status(400).json({ status: false, message: "User not found." });
+      return res
+        .status(400)
+        .json({ status: false, message: "User not found." });
     }
 
     // Remove refreshToken from the database (user logout)
     await Auth.findByIdAndUpdate(user._id, { refreshToken: null });
 
-    return res.status(200).json({ status: true, message: "Logged out successfully" });
+    return res
+      .status(200)
+      .json({ status: true, message: "Logged out successfully" });
   } catch (error) {
+    console.error("Error while logout: ", error);
     return res.status(500).json({
       status: false,
       message: error.message,
@@ -150,22 +172,28 @@ const userLogout = async (req, res) => {
   }
 };
 
-
-// Refresh token endpoint
+// Refresh accessToken
 const refreshAccessToken = async (req, res) => {
-  const { refreshToken } = req.body; 
+  const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    return res.status(500).json({ status: false, message: "Refresh token not provided." });
+    return res
+      .status(500)
+      .json({ status: false, message: "Refresh token not provided." });
   }
 
   const user = await Auth.findOne({ refreshToken });
   if (!user) {
-    return res.status(403).json({ status: false, message: "Invalid refresh token." });
+    return res
+      .status(403)
+      .json({ status: false, message: "Invalid refresh token." });
   }
 
   try {
-    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const decodedToken = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
 
     const user = await Auth.findById(decodedToken?._id);
 
@@ -180,9 +208,10 @@ const refreshAccessToken = async (req, res) => {
     }
 
     // If the token is valid, generate a new access token and set the header
-    const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(user._id);
+    const { accessToken, newRefreshToken } =
+      await generateAccessAndRefreshToken(user._id);
 
-    res.setHeader('Authorization', `Bearer ${accessToken}`); 
+    res.setHeader("Authorization", `Bearer ${accessToken}`);
 
     return res.status(200).json({
       status: true,
@@ -191,9 +220,147 @@ const refreshAccessToken = async (req, res) => {
       refreshToken: newRefreshToken,
     });
   } catch (error) {
+    console.error("Error in refresh access token:", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
 
+// forgot password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ status: false, message: "Email is required" });
+    }
 
-export { userRegister, userLogin, userLogout, refreshAccessToken };
+    // Find user by email
+    const user = await Auth.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+
+    // Generate a random 6-digit otp
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    // set the otp in database
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send the OTP to the users
+    await sendMail(email, otp);
+
+    return res.status(201).json({
+      status: true,
+      message: "Your OTP has been sent",
+    });
+  } catch (error) {
+    console.error("Error in forgotPassword:", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// Verify the otp
+const verifyOtp = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    // check the user and the otp is inalid or expire
+    const user = await Auth.findOne({ otp });
+    if (user.otp !== otp || new Date() > user.otpExpires) {
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid or expired OTP" });
+    }
+
+    // If verified then undefine otp details from database
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    return res.json({ status: true, message: "OTP verified successfully" });
+  } catch (error) {
+    console.log("Error in verifyOtp:", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// Resend otp
+const resendOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    // Find the user by otp
+    const user = await Auth.findOne({ otp });
+    if (!user)
+      return res
+        .status(404)
+        .json({ status: false, message: "User not found or OTP is incorrect" });
+
+    // Generate new otp
+    const newOtp = generateOTP();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Update the otp
+    user.otp = newOtp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send otp users email
+    await sendMail(user.email, newOtp);
+
+    return res.status(200).json({
+      status: true,
+      message: "OTP has been resent successfully",
+    });
+  } catch (error) {
+    console.log("Error while sending new otp: ", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// Reset pass
+const resetPassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    const email = req.user.email;
+    const user = await Auth.findOne({ email });
+    if (!user)
+      return res.status(404).json({ status: false, message: "User not found" });
+
+    // Compare the pass
+    const isOldPasswordCorrect = await user.isPasswordValid(oldPassword);
+    if (!isOldPasswordCorrect)
+      return res
+        .status(400)
+        .json({ status: false, message: "Old password is incorrect" });
+
+    // Update the user password
+    user.password = newPassword;
+    await user.save();
+
+    // Send a success response
+    return res.status(200).json({
+      status: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.log("Error while reseting password: ", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+export {
+  userRegister,
+  userLogin,
+  userLogout,
+  refreshAccessToken,
+  forgotPassword,
+  verifyOtp,
+  resendOTP,
+  resetPassword,
+};

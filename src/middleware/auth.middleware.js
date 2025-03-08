@@ -3,15 +3,10 @@ import { Auth } from "../model/auth.model.js";
 
 // Middleware to verify JWT token
 const verifyJWT = async (req, res, next) => {
-  // Skip the check for routes that don't require authentication
-  if (req.method === 'POST' && (req.url === '/login' || req.url === '/register')) {
-    return next();
-  }
 
   try {
     const authHeader = req.header("Authorization");
 
-    // If the header is missing or doesn't start with 'Bearer ', skip the token validation
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(400).json({
         status: false,
@@ -35,7 +30,7 @@ const verifyJWT = async (req, res, next) => {
       });
     }
 
-    // Add user to req object to use in other routes
+    // Add user to req
     req.user = user;
     next();
   } catch (error) {
