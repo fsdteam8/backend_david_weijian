@@ -40,8 +40,7 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-// Update User Profile (name, email, phone, dateOfBirth)
-
+// Update User Profile and upload avatar and also update avatar
 const updateUserProfile = async (req, res) => {
   try {
     const { name, email, phone, dateOfBirth } = req.body;
@@ -97,4 +96,53 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-export { getUserProfile, updateUserProfile };
+// change password from profile
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+    const userId = req.user._id;
+    const user = await Auth.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+    }
+
+    // check the pass
+    const isMatch = await user.isPasswordValid(currentPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        status: false,
+        message: "Incorrect current password",
+      });
+    }
+
+    // check if new password and confirm new password match
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({
+        status: false,
+        message: "New password and confirm new password does not match",
+      });
+    }
+
+    // update the password
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.log("Error while changing password: ", error);
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+export { getUserProfile, updateUserProfile, changePassword };
