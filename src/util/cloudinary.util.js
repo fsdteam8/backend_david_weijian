@@ -21,7 +21,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto", 
+      resource_type: "auto",
     });
 
     // check if response has a URL then delete local file
