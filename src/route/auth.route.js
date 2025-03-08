@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {userRegister, userLogin, userLogout, refreshAccessToken, forgotPassword, verifyOtp} from "../controller/auth.controller.js"
+import {userRegister, userLogin, userLogout, refreshAccessToken, forgotPassword, verifyOtp, resendOTP} from "../controller/auth.controller.js"
 import {verifyJWT} from "../middleware/auth.middleware.js"
 
 const router = Router();
@@ -10,5 +10,6 @@ router.get("/user-logout", verifyJWT, userLogout)
 router.post("/refresh-accessToken", refreshAccessToken)
 router.post("/forgot-password", forgotPassword)
 router.post("/verify-otp", verifyOtp)
+router.post("/resend-otp", resendOTP)
 
 export default router;

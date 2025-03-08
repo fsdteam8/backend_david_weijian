@@ -236,18 +236,22 @@ const forgotPassword = async (req, res) => {
         .json({ status: false, message: "Email is required" });
     }
 
+    // Find user by email
     const user = await Auth.findOne({ email });
     if (!user) {
       return res.status(404).json({ status: false, message: "User not found" });
     }
 
+    // Generate a random 6-digit otp
     const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
+    // set the otp in database
     user.otp = otp;
     user.otpExpires = otpExpires;
     await user.save();
 
+    // Send the OTP to the users
     await sendMail(email, otp);
 
     return res.status(201).json({
@@ -260,6 +264,7 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+// Verify the otp
 const verifyOtp = async (req, res) => {
   try {
     const {otp } = req.body;
@@ -281,6 +286,40 @@ const verifyOtp = async (req, res) => {
     return res.status(500).json({ status: false, message: error.message });
   }
 };
+
+// Resend otp
+const resendOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    // Find the user by otp
+    const user = await Auth.findOne({ otp });
+    if (!user)
+      return res.status(404).json({ status: false, message: "User not found or OTP is incorrect" });
+
+    // Generate new otp
+    const newOtp = generateOTP();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Update the otp
+    user.otp = newOtp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send otp users email
+    await sendMail(user.email, newOtp); 
+
+    return res.status(200).json({
+      status: true,
+      message: "OTP has been resent successfully",
+    });
+  } catch (error) {
+    console.log("Error while sending new otp: ", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+
 
 // const resetPassword = async (req, res) => {
 //   try {
@@ -306,4 +345,5 @@ export {
   refreshAccessToken,
   forgotPassword,
   verifyOtp,
+  resendOTP
 };
