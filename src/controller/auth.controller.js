@@ -1,7 +1,6 @@
 import { Auth } from "../model/auth.model.js";
 import { sendMail } from "../util/email.util.js";
 import { generateOTP } from "../util/otp.util.js";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // generate token
@@ -267,12 +266,14 @@ const forgotPassword = async (req, res) => {
 // Verify the otp
 const verifyOtp = async (req, res) => {
   try {
-    const {otp } = req.body;
+    const { otp } = req.body;
 
     // check the user and the otp is inalid or expire
     const user = await Auth.findOne({ otp });
     if (user.otp !== otp || new Date() > user.otpExpires) {
-      return res.status(400).json({status: false, message: "Invalid or expired OTP" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid or expired OTP" });
     }
 
     // If verified then undefine otp details from database
@@ -295,7 +296,9 @@ const resendOTP = async (req, res) => {
     // Find the user by otp
     const user = await Auth.findOne({ otp });
     if (!user)
-      return res.status(404).json({ status: false, message: "User not found or OTP is incorrect" });
+      return res
+        .status(404)
+        .json({ status: false, message: "User not found or OTP is incorrect" });
 
     // Generate new otp
     const newOtp = generateOTP();
@@ -307,7 +310,7 @@ const resendOTP = async (req, res) => {
     await user.save();
 
     // Send otp users email
-    await sendMail(user.email, newOtp); 
+    await sendMail(user.email, newOtp);
 
     return res.status(200).json({
       status: true,
@@ -324,16 +327,17 @@ const resetPassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    const email = req.user.email
-    const user = await Auth.findOne({email});
+    const email = req.user.email;
+    const user = await Auth.findOne({ email });
     if (!user)
       return res.status(404).json({ status: false, message: "User not found" });
 
     // Compare the pass
-    const isOldPasswordCorrect = await user.isPasswordValid(oldPassword)
+    const isOldPasswordCorrect = await user.isPasswordValid(oldPassword);
     if (!isOldPasswordCorrect)
-      return res.status(400).json({ status: false, message: "Old password is incorrect" });
-
+      return res
+        .status(400)
+        .json({ status: false, message: "Old password is incorrect" });
 
     // Update the user password
     user.password = newPassword;
@@ -342,15 +346,13 @@ const resetPassword = async (req, res) => {
     // Send a success response
     return res.status(200).json({
       status: true,
-      message: "Password updated successfully"
+      message: "Password updated successfully",
     });
-
   } catch (error) {
-    console.log("Error while reseting password: " , error);
+    console.log("Error while reseting password: ", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
-
 
 export {
   userRegister,
@@ -360,5 +362,5 @@ export {
   forgotPassword,
   verifyOtp,
   resendOTP,
-  resetPassword
+  resetPassword,
 };

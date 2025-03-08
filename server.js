@@ -11,9 +11,11 @@ dotenv.config();
 
 // importing routes
 import authRouter from "./src/route/auth.route.js"
+import userProfileRoutes from "./src/route/userProfile.route.js"
 
 // Set
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userProfileRoutes);
 
 // Database and port
 dbconfig()

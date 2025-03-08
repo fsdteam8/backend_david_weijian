@@ -1,7 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 
 const userProfileSchema = new Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'Auth', required: true },
     name: {
         type: String,
         required: true
@@ -13,7 +13,6 @@ const userProfileSchema = new Schema({
     },
     phone: {
         type: String,
-        required: true,
         unique: true
     },
     dateOfBirth: {

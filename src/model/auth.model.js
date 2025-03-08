@@ -27,10 +27,6 @@ const authSchema = new Schema({
   googleId: {
     type: String,
   },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
   otp: { 
     type: String 
   },  
