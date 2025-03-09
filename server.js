@@ -10,16 +10,18 @@ app.use(express.json());
 dotenv.config();
 
 // importing routes
-import authRouter from "./src/route/auth.route.js"
-import userProfileRoutes from "./src/route/userProfile.route.js"
-import adminRoutes from "./src/route/admin.route.js"
-import supervisorRoutes from "./src/route/supervisor.route.js"
+import authRouter from "./src/route/auth.route.js";
+import userProfileRoutes from "./src/route/userProfile.route.js";
+import adminRoutes from "./src/route/admin.route.js";
+import supervisorRoutes from "./src/route/supervisor.route.js";
+import contactUsRoutes from "./src/route/contactUs.route.js";
 
 // Set
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userProfileRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/supervisor", supervisorRoutes);
+app.use("/api/v1", contactUsRoutes)
 
 // Database and port
 dbconfig()
