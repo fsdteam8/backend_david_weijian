@@ -59,7 +59,7 @@ const userRegister = async (req, res) => {
     if (existedUser) {
       return res.status(400).json({
         status: false,
-        message: "User with this email or name already exists.",
+        message: "User with this email already exists.",
       });
     }
     // validate role
