@@ -1,12 +1,28 @@
-import mongoose from 'mongoose';
+import mongoose, {Schema} from "mongoose";
 
-const contactUsSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  phone: { type: String, required: true },
-  description: { type: String, required: true },
-}, { timestamps: true });
+const contactUsSchema = new Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId, ref: "Auth", required: true
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-export const ContactUs = mongoose.model('ContactUs', contactUsSchema);
-
+export const ContactUs = mongoose.model("ContactUs", contactUsSchema);
