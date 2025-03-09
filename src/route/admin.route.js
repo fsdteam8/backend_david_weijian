@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/all-users", verifyJWT, isAdmin, getAllUsers );
 router.put("/update-role", verifyJWT, isAdmin, updateUserRole);
 router.delete("/delete-user", verifyJWT, isAdmin, deleteUser);
-router.get("/contact-details", verifyJWT, getAllContactUsSubmissions);
+router.get("/contact-details", verifyJWT, isAdmin, getAllContactUsSubmissions);
 
 
 export default router;
