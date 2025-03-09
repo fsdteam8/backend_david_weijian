@@ -25,7 +25,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 // register user
 const userRegister = async (req, res) => {
   try {
-    const { name, email, password, dateOfBirth } = req.body;
+    const { name, email, password, dateOfBirth, who } = req.body;
 
     // check the body is empty or not
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -54,7 +54,7 @@ const userRegister = async (req, res) => {
     }
 
     // check if user already exists
-    const existedUser = await Auth.findOne({ $or: [{ email }, { name }] });
+    const existedUser = await Auth.findOne({ $or: [{ email }] });
 
     if (existedUser) {
       return res.status(400).json({
@@ -62,9 +62,10 @@ const userRegister = async (req, res) => {
         message: "User with this email or name already exists.",
       });
     }
-
+    // validate role
+    const role = who && ["user", "admin", "supervisor"].includes(who) ? who : "user";
     // create new user
-    const user = await Auth.create({ name, email, password, dateOfBirth });
+    const user = await Auth.create({ name, email, password, dateOfBirth, who: role });
 
     // remove password and refreshToken field from response
     const createdUser = await Auth.findById(user._id).select(
