@@ -18,21 +18,22 @@ const authSchema = new Schema({
   },
   dateOfBirth: {
     type: Date,
-    required: true,
+    required: true,  
   },
   who: {
     type: String,
-    default: "",
+    enum: ["user", "admin", "supervisor"],
+    default: "user",
   },
   googleId: {
     type: String,
   },
-  otp: { 
-    type: String 
-  },  
-  otpExpires: { 
-    type: Date 
-  }, 
+  otp: {
+    type: String,
+  },
+  otpExpires: {
+    type: Date,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
