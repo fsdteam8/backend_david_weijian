@@ -50,4 +50,25 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+// Delete user (Admin only)
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const deletedUser = await Auth.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "User deleted successfully",
+      data: deletedUser,
+    });
+  } catch (error) {
+    console.log("Error while deleting: ", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
 export { getAllUsers, updateUserRole, deleteUser };
