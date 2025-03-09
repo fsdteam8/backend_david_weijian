@@ -1,5 +1,6 @@
 import { Auth } from "../model/auth.model.js";
 import { ContactUs } from "../model/contactUs.model.js";
+import { BugReport } from "../model/bugReport.model.js";
 
 // Get all users (Admin only)
 const getAllUsers = async (req, res) => {
@@ -24,11 +25,9 @@ const getAllUsers = async (req, res) => {
 // Get all users contactUs data from admin
 const getAllContactUsSubmissions = async (_, res) => {
   try {
-    const contactSubmissions = await ContactUs.find().populate(
-      "user",
-      "name email"
-    ).lean()
-
+    const contactSubmissions = await ContactUs.find()
+      .populate("user", "name email")
+      .lean();
 
     if (!contactSubmissions) {
       return res.status(404).json({ status: false, message: "No data found" });
@@ -40,7 +39,29 @@ const getAllContactUsSubmissions = async (_, res) => {
       data: contactSubmissions,
     });
   } catch (error) {
-    return res.status(500).json({status:false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// Getall bug reports of a user from admin
+const getAllBugReports = async (_, res) => {
+  try {
+    const bugReports = await BugReport.find()
+      .populate("user", "name email")
+      .lean();
+
+    if (!bugReports) {
+      return res.status(404).json({ status: false, message: "No data found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Bug report data fetched successfully",
+      data: bugReports,
+    });
+  } catch (error) {
+    console.log("Error getting bug reports", error);
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -95,4 +116,10 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, updateUserRole, deleteUser, getAllContactUsSubmissions };
+export {
+  getAllUsers,
+  updateUserRole,
+  deleteUser,
+  getAllContactUsSubmissions,
+  getAllBugReports,
+};
