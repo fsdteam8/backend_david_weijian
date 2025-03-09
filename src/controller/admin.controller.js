@@ -1,4 +1,5 @@
 import { Auth } from "../model/auth.model.js";
+import { ContactUs } from "../model/contactUs.model.js";
 
 // Get all users (Admin only)
 const getAllUsers = async (req, res) => {
@@ -17,6 +18,29 @@ const getAllUsers = async (req, res) => {
   } catch (error) {
     console.log("Error geting all users from admin: ", error);
     return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// Get all users contactUs data from admin
+const getAllContactUsSubmissions = async (_, res) => {
+  try {
+    const contactSubmissions = await ContactUs.find().populate(
+      "user",
+      "name email"
+    ).lean()
+
+
+    if (!contactSubmissions) {
+      return res.status(404).json({ status: false, message: "No data found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Contact us data fetched successfully",
+      data: contactSubmissions,
+    });
+  } catch (error) {
+    return res.status(500).json({status:false, message: error.message });
   }
 };
 
@@ -71,4 +95,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, updateUserRole, deleteUser };
+export { getAllUsers, updateUserRole, deleteUser, getAllContactUsSubmissions };
