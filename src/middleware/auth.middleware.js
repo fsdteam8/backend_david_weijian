@@ -32,7 +32,6 @@ const verifyJWT = async (req, res, next) => {
 
     // Add user to req
     req.user = user;
-    console.log("Authenticated User:", req.user);
     next();
   } catch (error) {
     return res.status(500).json({
