@@ -16,6 +16,7 @@ import adminRoutes from "./src/route/admin.route.js";
 import supervisorRoutes from "./src/route/supervisor.route.js";
 import contactUsRoutes from "./src/route/contactUs.route.js";
 import bugReport from "./src/route/bugReport.route.js"
+import testCentre from "./src/route/testCentre.route.js";
 
 // Set
 app.use("/api/v1/auth", authRouter);
@@ -24,6 +25,7 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/supervisor", supervisorRoutes);
 app.use("/api/v1", contactUsRoutes)
 app.use("/api/v1/bug-report", bugReport)
+app.use("/api/v1/test-centre", testCentre)
 
 // Database and port
 dbconfig()
