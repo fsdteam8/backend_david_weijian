@@ -167,6 +167,10 @@ const addTestCenter = async (req, res) => {
 
   try {
     const newTestCenter = new TestCenter({ name, passRate, routes, address, postCode });
+
+    if (!newTestCenter) {
+      return res.status(400).json({ status: false, message: "You must fill up everything" });
+    }
     await newTestCenter.save();
 
     return res.status(201).json({
@@ -179,6 +183,27 @@ const addTestCenter = async (req, res) => {
     return res.status(500).json({status: false, message: err.message });
   }
 };
+
+// Update a Test Center
+const updateTestCenter = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const body = req.body;
+    const updatedTestCenter = await TestCenter.findByIdAndUpdate(id, body, { new: true });
+
+    if (!updatedTestCenter) {
+      return res.status(404).json({status: false, message: "Test centre not found" });
+    }
+    return res.status(200).json({
+      status: true,
+      message: "Test centre updated successfully",
+      data: updatedTestCenter,
+    });
+  } catch (error) {
+    console.log("Error while updating test centre", error);
+    return res.status(500).json({status: false, message: err.message });
+  }
+};
 export {
   getAllUsers,
   updateUserRole,
@@ -186,5 +211,6 @@ export {
   getAllContactUsSubmissions,
   getAllBugReports,
   adminLogin,
-  addTestCenter
+  addTestCenter,
+  updateTestCenter
 };
