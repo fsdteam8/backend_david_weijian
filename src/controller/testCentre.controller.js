@@ -1,32 +1,53 @@
-import {TestCenter} from "../model/testCentre.model.js"
+import { TestCenter } from "../model/testCentre.model.js";
 
 // Search centre by postal code or name
 const searchTestCentres = async (req, res) => {
-    const { search } = req.query;
-    try {
-      const testCenters = await TestCenter.find({
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { postCode: { $regex: search, $options: 'i' } },
-        ],
-      });
+  const { search } = req.query;
+  try {
+    const testCenters = await TestCenter.find({
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { postCode: { $regex: search, $options: "i" } },
+      ],
+    });
 
-      if (!testCenters) {
-        return res.status(404).json({ status: false, message: 'No test centers found' });
-      }
-
-      return res.status(200).json({
-        status: true,
-        message: 'Test centers found',
-        data: testCenters,
-      });
-    } catch (error) {
-        console.log("Error while searching test centers", error);
-      res.status(500).json({ message: err.message });
+    if (!testCenters) {
+      return res
+        .status(404)
+        .json({ status: false, message: "No test centers found" });
     }
-  };
 
-export {
-    searchTestCentres,
-    
-}
+    return res.status(200).json({
+      status: true,
+      message: "Test centers found",
+      data: testCenters,
+    });
+  } catch (error) {
+    console.log("Error while searching test centers", error);
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// Get Test Center Details
+const getTestCenterDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const testCenter = await TestCenter.findById(id);
+    if (!testCenter) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Test center not found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Test center details fetched successfully",
+      data: testCenter,
+    });
+  } catch (error) {
+    console.log("Error while getting test center details", error);
+    return res.status(500).json({ status: false, message: err.message });
+  }
+};
+
+export { searchTestCentres, getTestCenterDetails };
