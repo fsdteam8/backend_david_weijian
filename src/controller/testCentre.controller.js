@@ -31,8 +31,7 @@ const searchTestCentres = async (req, res) => {
 // Get Test Center Details
 const getTestCenterDetails = async (req, res) => {
   try {
-    const { id } = req.params;
-    const testCenter = await TestCenter.findById(id);
+    const testCenter = await TestCenter.find({});
     if (!testCenter) {
       return res
         .status(404)
