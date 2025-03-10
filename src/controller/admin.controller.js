@@ -204,6 +204,20 @@ const updateTestCenter = async (req, res) => {
     return res.status(500).json({status: false, message: err.message });
   }
 };
+
+// Delete a Test Center
+const deleteTestCenter = async (req, res) => {
+  try {
+    const user = await TestCenter.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({status: false, message: 'User not found' });
+    }
+    return res.status(200).json({status: true, message: 'Test center deleted' });
+  } catch (error) {
+    console.log("Error while deleting test center", error);
+    return res.status(500).json({status: false, message: err.message });
+  }
+};
 export {
   getAllUsers,
   updateUserRole,
@@ -212,5 +226,6 @@ export {
   getAllBugReports,
   adminLogin,
   addTestCenter,
-  updateTestCenter
+  updateTestCenter,
+  deleteTestCenter
 };
