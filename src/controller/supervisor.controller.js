@@ -1,7 +1,7 @@
 import { Auth } from "../model/auth.model.js"
 
 // Get all users (Supervisor can view, but not update or delete)
-const getAllUsersForSupervisor = async (req, res) => {
+const getAllUsersForSupervisor = async (_, res) => {
   try {
     const users = await Auth.find().select("-password -refreshToken");
 

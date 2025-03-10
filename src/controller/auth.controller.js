@@ -122,10 +122,6 @@ const userLogin = async (req, res) => {
       user._id
     );
 
-    // again remove password and refreshToken field from response
-    const loggedUser = await Auth.findById(user._id).select(
-      "-password -refreshToken"
-    );
 
     // set the access token in the response header
     res.setHeader("Authorization", `Bearer ${accessToken}`);
@@ -363,4 +359,5 @@ export {
   verifyOtp,
   resendOTP,
   resetPassword,
+  generateAccessAndRefreshToken
 };

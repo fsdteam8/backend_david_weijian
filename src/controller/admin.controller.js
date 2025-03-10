@@ -1,9 +1,52 @@
 import { Auth } from "../model/auth.model.js";
 import { ContactUs } from "../model/contactUs.model.js";
 import { BugReport } from "../model/bugReport.model.js";
+import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
 
-// Get all users (Admin only)
-const getAllUsers = async (req, res) => {
+// Admin Login
+const adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await Auth.findOne({ email, who: "admin" });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Admin not found" });
+    }
+
+    const isPasswordValid = await user.isPasswordValid(password);
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ status: false, message: "Password invalid" });
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.setHeader("Authorization", `Bearer ${accessToken}`);
+
+    return res.status(200).json({
+      status: true,
+      message: "Admin login successful",
+      accessToken,
+      refreshToken,
+    });
+  } catch (error) {
+    console.log("Error while login in admin dashboard: ", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+// <<<<<<<<<<<<<<<<<<<<<<<< USER CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>
+const getAllUsers = async (_, res) => {
   try {
     const users = await Auth.find().select("-password -refreshToken");
 
@@ -22,50 +65,6 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// Get all users contactUs data from admin
-const getAllContactUsSubmissions = async (_, res) => {
-  try {
-    const contactSubmissions = await ContactUs.find()
-      .populate("user", "name email")
-      .lean();
-
-    if (!contactSubmissions) {
-      return res.status(404).json({ status: false, message: "No data found" });
-    }
-
-    return res.status(200).json({
-      status: true,
-      message: "Contact us data fetched successfully",
-      data: contactSubmissions,
-    });
-  } catch (error) {
-    return res.status(500).json({ status: false, message: error.message });
-  }
-};
-
-// Getall bug reports of a user from admin
-const getAllBugReports = async (_, res) => {
-  try {
-    const bugReports = await BugReport.find()
-      .populate("user", "name email")
-      .lean();
-
-    if (!bugReports) {
-      return res.status(404).json({ status: false, message: "No data found" });
-    }
-
-    return res.status(200).json({
-      status: true,
-      message: "Bug report data fetched successfully",
-      data: bugReports,
-    });
-  } catch (error) {
-    console.log("Error getting bug reports", error);
-    return res.status(500).json({ status: false, message: error.message });
-  }
-};
-
-// Update user role (Admin only)
 const updateUserRole = async (req, res) => {
   try {
     const { userId, role } = req.body;
@@ -95,7 +94,6 @@ const updateUserRole = async (req, res) => {
   }
 };
 
-// Delete user (Admin only)
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -116,10 +114,53 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// <<<<<<<<<<<<<<<<<<<<<<<< CONTACT_US CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>
+const getAllContactUsSubmissions = async (_, res) => {
+  try {
+    const contactSubmissions = await ContactUs.find()
+      .populate("user", "name email")
+      .lean();
+
+    if (!contactSubmissions) {
+      return res.status(404).json({ status: false, message: "No data found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Contact us data fetched successfully",
+      data: contactSubmissions,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// <<<<<<<<<<<<<<<<<<<<<<< BUG_REPORT CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>
+const getAllBugReports = async (_, res) => {
+  try {
+    const bugReports = await BugReport.find()
+      .populate("user", "name email")
+      .lean();
+
+    if (!bugReports) {
+      return res.status(404).json({ status: false, message: "No data found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Bug report data fetched successfully",
+      data: bugReports,
+    });
+  } catch (error) {
+    console.log("Error getting bug reports", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
 export {
   getAllUsers,
   updateUserRole,
   deleteUser,
   getAllContactUsSubmissions,
   getAllBugReports,
+  adminLogin,
 };
