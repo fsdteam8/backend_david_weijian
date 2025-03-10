@@ -7,7 +7,8 @@ import {
   getAllContactUsSubmissions,
   getAllBugReports,
   addTestCenter,
-  updateTestCenter
+  updateTestCenter,
+  deleteTestCenter
 } from "../controller/admin.controller.js";
 import { isAdmin } from "../middleware/role.middleware.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
@@ -31,5 +32,6 @@ router.get("/bug-report", verifyJWT, isAdmin, getAllBugReports);
 // <<<<<<<<<<<<<<<< TEST-CENTER ROUTE FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>>
 router.post("/add-test-centre", verifyJWT, isAdmin, addTestCenter);
 router.put("/update-test-centre/:id", verifyJWT, isAdmin, updateTestCenter);
+router.delete("/delete-test-centre/:id", verifyJWT, isAdmin, deleteTestCenter);
 
 export default router;
