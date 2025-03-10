@@ -98,7 +98,7 @@ const userLogin = async (req, res) => {
       });
     }
 
-    const user = await Auth.findOne({ email });
+    const user = await Auth.findOne({ email, who: "user" });
 
     // if user not found then throw error
     if (!user) {

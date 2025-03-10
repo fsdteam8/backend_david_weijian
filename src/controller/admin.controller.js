@@ -22,11 +22,10 @@ const adminLogin = async (req, res) => {
         .json({ status: false, message: "Password invalid" });
     }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    const { accessToken } = await generateAccessAndRefreshToken(
       user._id
     );
 
-    user.refreshToken = refreshToken;
     await user.save();
 
     res.setHeader("Authorization", `Bearer ${accessToken}`);
@@ -35,7 +34,6 @@ const adminLogin = async (req, res) => {
       status: true,
       message: "Admin login successful",
       accessToken,
-      refreshToken,
     });
   } catch (error) {
     console.log("Error while login in admin dashboard: ", error);
