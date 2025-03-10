@@ -5,6 +5,6 @@ import {verifyJWT} from "../middleware/auth.middleware.js"
 const router = express.Router();
 
 router.get('/search', verifyJWT, searchTestCentres);
-router.get('/details/:id', verifyJWT, getTestCenterDetails);
+router.get('/details', verifyJWT, getTestCenterDetails);
 
 export default router
