@@ -2,6 +2,8 @@ import { Auth } from "../model/auth.model.js";
 import { ContactUs } from "../model/contactUs.model.js";
 import { BugReport } from "../model/bugReport.model.js";
 import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
+import {TestCenter} from "../model/testCentre.model.js"
+import {RouteCentre} from "../model/routeCentre.model.js"
 
 // Admin Login
 const adminLogin = async (req, res) => {
@@ -44,6 +46,7 @@ const adminLogin = async (req, res) => {
 };
 
 // <<<<<<<<<<<<<<<<<<<<<<<< USER CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>
+// Get user
 const getAllUsers = async (_, res) => {
   try {
     const users = await Auth.find().select("-password -refreshToken");
@@ -63,6 +66,7 @@ const getAllUsers = async (_, res) => {
   }
 };
 
+// Update role
 const updateUserRole = async (req, res) => {
   try {
     const { userId, role } = req.body;
@@ -92,6 +96,7 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+// Devele user
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -154,6 +159,26 @@ const getAllBugReports = async (_, res) => {
     return res.status(500).json({ status: false, message: error.message });
   }
 };
+
+// <<<<<<<<<<<<<<<<<<<<<<< TEST_CENTRE CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>
+// Add test centre 
+const addTestCenter = async (req, res) => {
+  const { name, passRate, routes, address, postCode } = req.body;
+
+  try {
+    const newTestCenter = new TestCenter({ name, passRate, routes, address, postCode });
+    await newTestCenter.save();
+
+    return res.status(201).json({
+      status: true,
+      message: "Test centre added successfully",
+      data: newTestCenter,
+    });
+  } catch (error) {
+    console.log("Error while added test centre", error);
+    return res.status(500).json({status: false, message: err.message });
+  }
+};
 export {
   getAllUsers,
   updateUserRole,
@@ -161,4 +186,5 @@ export {
   getAllContactUsSubmissions,
   getAllBugReports,
   adminLogin,
+  addTestCenter
 };
