@@ -13,14 +13,5 @@ const isAdmin = (req, res, next) => {
     }
     return res.status(403).json({ status: false, message: 'Access denied. Supervisors or Admins only.' });
   };
-  
-  // Middleware for user
-  const isUserOrAbove = (req, res, next) => {
-    if (req.user && req.user.who === 'user') {
-      return next();
-    }
-    return res.status(403).json({ status: false, message: 'Access denied. Users or above only.' });
-  };
-  
-  export { isAdmin, isSupervisor, isUserOrAbove };
+  export { isAdmin, isSupervisor };
   

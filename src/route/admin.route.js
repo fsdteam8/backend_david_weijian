@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  adminLogin,
   getAllUsers,
   updateUserRole,
   deleteUser,
@@ -11,10 +12,18 @@ import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+// <<<<<<<<<<<<<<<< ADMIN LOGIN ROUTE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+router.post("/login", adminLogin);
+
+// <<<<<<<<<<<<<<<<< USER ROUTE FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 router.get("/all-users", verifyJWT, isAdmin, getAllUsers);
 router.put("/update-role", verifyJWT, isAdmin, updateUserRole);
 router.delete("/delete-user", verifyJWT, isAdmin, deleteUser);
+
+// <<<<<<<<<<<<<<<< CONTACT-US ROUTE FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>>>
 router.get("/contact-details", verifyJWT, isAdmin, getAllContactUsSubmissions);
+
+// <<<<<<<<<<<<<<<< BUG-REPORT ROUTE FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>>
 router.get("/bug-report", verifyJWT, isAdmin, getAllBugReports);
 
 export default router;
