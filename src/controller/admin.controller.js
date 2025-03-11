@@ -238,12 +238,10 @@ const createRoute = async (req, res) => {
   try {
     const route = new Route(req.body);
     if (!route) {
-      return res
-        .status(400)
-        .json({
-          status: false,
-          message: "You must provide all the route details",
-        });
+      return res.status(400).json({
+        status: false,
+        message: "You must provide all the route details",
+      });
     }
     await route.save();
 
@@ -262,12 +260,14 @@ const updateRoute = async (req, res) => {
   try {
     const { id } = req.params;
     const body = req.body;
-    const route = await Route.findByIdAndUpdate(id, body , {
+    const route = await Route.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
     if (!route) {
-      return res.status(404).json({status: false, message:"Route not found"});
+      return res
+        .status(404)
+        .json({ status: false, message: "Route not found" });
     }
     return res.status(200).json({
       status: true,
@@ -276,23 +276,29 @@ const updateRoute = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while updating routes", error);
-    return res.status(400).json({status: false, message: error.message });
+    return res.status(400).json({ status: false, message: error.message });
   }
 };
 
 // // Delete a route by ID
-// const deleteRoute = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const route = await Route.findByIdAndDelete(id);
-//     if (!route) {
-//       return res.status(404).json({ error: 'Route not found' });
-//     }
-//     res.json({ message: 'Route deleted successfully' });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+const deleteRoute = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const route = await Route.findByIdAndDelete(id);
+    if (!route) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Route not found" });
+    }
+    return res.status(200).json({
+      status: true,
+      message: "Route deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error while deleting routes", error);
+    return res.status(500).json({status: false, message: error.message });
+  }
+};
 export {
   getAllUsers,
   updateUserRole,
@@ -304,5 +310,6 @@ export {
   updateTestCenter,
   deleteTestCenter,
   createRoute,
-  updateRoute
+  updateRoute,
+  deleteRoute
 };
