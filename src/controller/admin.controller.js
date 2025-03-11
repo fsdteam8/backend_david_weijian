@@ -257,47 +257,28 @@ const createRoute = async (req, res) => {
   }
 };
 
-// Get all routes for a specific test centre
-// const getRoutesByTestCentre = async (req, res) => {
-//   try {
-//     const { TestCentreName } = req.params;
-//     const routes = await Route.find({ TestCentreName });
-//     res.json(routes);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// // Get a specific route by ID
-// const getRouteById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const route = await Route.findById(id);
-//     if (!route) {
-//       return res.status(404).json({ error: 'Route not found' });
-//     }
-//     res.json(route);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 // // Update a route by ID
-// const updateRoute = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const route = await Route.findByIdAndUpdate(id, req.body, {
-//       new: true,
-//       runValidators: true,
-//     });
-//     if (!route) {
-//       return res.status(404).json({ error: 'Route not found' });
-//     }
-//     res.json(route);
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// };
+const updateRoute = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const body = req.body;
+    const route = await Route.findByIdAndUpdate(id, body , {
+      new: true,
+      runValidators: true,
+    });
+    if (!route) {
+      return res.status(404).json({status: false, message:"Route not found"});
+    }
+    return res.status(200).json({
+      status: true,
+      message: "Route updated successfully",
+      data: route,
+    });
+  } catch (error) {
+    console.log("Error while updating routes", error);
+    return res.status(400).json({status: false, message: error.message });
+  }
+};
 
 // // Delete a route by ID
 // const deleteRoute = async (req, res) => {
@@ -322,5 +303,6 @@ export {
   addTestCenter,
   updateTestCenter,
   deleteTestCenter,
-  createRoute
+  createRoute,
+  updateRoute
 };
