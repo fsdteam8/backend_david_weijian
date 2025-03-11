@@ -25,7 +25,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 // register user
 const userRegister = async (req, res) => {
   try {
-    const { name, email, password, dateOfBirth, who } = req.body;
+    const { name, email, password, dateOfBirth } = req.body;
 
     // check the body is empty or not
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -62,10 +62,8 @@ const userRegister = async (req, res) => {
         message: "User with this email already exists.",
       });
     }
-    // validate role
-    const role = who && ["user", "admin", "supervisor"].includes(who) ? who : "user";
     // create new user
-    const user = await Auth.create({ name, email, password, dateOfBirth, who: role });
+    const user = await Auth.create({ name, email, password, dateOfBirth});
 
     // remove password and refreshToken field from response
     const createdUser = await Auth.findById(user._id).select(
