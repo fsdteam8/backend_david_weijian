@@ -2,8 +2,8 @@ import { Auth } from "../model/auth.model.js";
 import { ContactUs } from "../model/contactUs.model.js";
 import { BugReport } from "../model/bugReport.model.js";
 import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
-import {TestCenter} from "../model/testCentre.model.js"
-import {RouteCentre} from "../model/routeCentre.model.js"
+import { TestCenter } from "../model/testCentre.model.js";
+import { Route } from "../model/routeCentre.model.js";
 
 // Admin Login
 const adminLogin = async (req, res) => {
@@ -24,9 +24,7 @@ const adminLogin = async (req, res) => {
         .json({ status: false, message: "Password invalid" });
     }
 
-    const { accessToken } = await generateAccessAndRefreshToken(
-      user._id
-    );
+    const { accessToken } = await generateAccessAndRefreshToken(user._id);
 
     await user.save();
 
@@ -161,15 +159,23 @@ const getAllBugReports = async (_, res) => {
 };
 
 // <<<<<<<<<<<<<<<<<<<<<<< TEST_CENTRE CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>
-// Add test centre 
+// Add test centre
 const addTestCenter = async (req, res) => {
   const { name, passRate, routes, address, postCode } = req.body;
 
   try {
-    const newTestCenter = new TestCenter({ name, passRate, routes, address, postCode });
+    const newTestCenter = new TestCenter({
+      name,
+      passRate,
+      routes,
+      address,
+      postCode,
+    });
 
     if (!newTestCenter) {
-      return res.status(400).json({ status: false, message: "You must fill up everything" });
+      return res
+        .status(400)
+        .json({ status: false, message: "You must fill up everything" });
     }
     await newTestCenter.save();
 
@@ -180,19 +186,23 @@ const addTestCenter = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while added test centre", error);
-    return res.status(500).json({status: false, message: err.message });
+    return res.status(500).json({ status: false, message: err.message });
   }
 };
 
 // Update a Test Center
 const updateTestCenter = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const body = req.body;
-    const updatedTestCenter = await TestCenter.findByIdAndUpdate(id, body, { new: true });
+    const updatedTestCenter = await TestCenter.findByIdAndUpdate(id, body, {
+      new: true,
+    });
 
     if (!updatedTestCenter) {
-      return res.status(404).json({status: false, message: "Test centre not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Test centre not found" });
     }
     return res.status(200).json({
       status: true,
@@ -201,7 +211,7 @@ const updateTestCenter = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while updating test centre", error);
-    return res.status(500).json({status: false, message: err.message });
+    return res.status(500).json({ status: false, message: err.message });
   }
 };
 
@@ -210,14 +220,98 @@ const deleteTestCenter = async (req, res) => {
   try {
     const user = await TestCenter.findByIdAndDelete(req.params.id);
     if (!user) {
-      return res.status(404).json({status: false, message: 'User not found' });
+      return res.status(404).json({ status: false, message: "User not found" });
     }
-    return res.status(200).json({status: true, message: 'Test center deleted' });
+    return res
+      .status(200)
+      .json({ status: true, message: "Test center deleted" });
   } catch (error) {
     console.log("Error while deleting test center", error);
-    return res.status(500).json({status: false, message: err.message });
+    return res.status(500).json({ status: false, message: err.message });
   }
 };
+
+// <<<<<<<<<<<<<<<<<<<<<<< ROUTE_CENTRE CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>
+
+// Create a new route
+const createRoute = async (req, res) => {
+  try {
+    const route = new Route(req.body);
+    if (!route) {
+      return res
+        .status(400)
+        .json({
+          status: false,
+          message: "You must provide all the route details",
+        });
+    }
+    await route.save();
+
+    return res.status(201).json({
+      status: true,
+      message: "Route created successfully",
+      data: route,
+    });
+  } catch (error) {
+    return res.status(400).json({ status: false, message: error.message });
+  }
+};
+
+// Get all routes for a specific test centre
+// const getRoutesByTestCentre = async (req, res) => {
+//   try {
+//     const { TestCentreName } = req.params;
+//     const routes = await Route.find({ TestCentreName });
+//     res.json(routes);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// // Get a specific route by ID
+// const getRouteById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const route = await Route.findById(id);
+//     if (!route) {
+//       return res.status(404).json({ error: 'Route not found' });
+//     }
+//     res.json(route);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// // Update a route by ID
+// const updateRoute = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const route = await Route.findByIdAndUpdate(id, req.body, {
+//       new: true,
+//       runValidators: true,
+//     });
+//     if (!route) {
+//       return res.status(404).json({ error: 'Route not found' });
+//     }
+//     res.json(route);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+
+// // Delete a route by ID
+// const deleteRoute = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const route = await Route.findByIdAndDelete(id);
+//     if (!route) {
+//       return res.status(404).json({ error: 'Route not found' });
+//     }
+//     res.json({ message: 'Route deleted successfully' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 export {
   getAllUsers,
   updateUserRole,
@@ -227,5 +321,6 @@ export {
   adminLogin,
   addTestCenter,
   updateTestCenter,
-  deleteTestCenter
+  deleteTestCenter,
+  createRoute
 };

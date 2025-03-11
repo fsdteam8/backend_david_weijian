@@ -1,52 +1,62 @@
 import mongoose, {Schema} from "mongoose";
 
-const RouteSchema = new Schema(
+const routeSchema = new Schema(
   {
-    testCenterId: {
-      type: Schema.Types.ObjectId,
-      ref: "TestCenter",
-      required: true,
-    },
-    startingPoint: {
+    TestCentreName: {
       type: String,
       required: true,
     },
-    endingPoint: {
+    expectedTime: {
+      type: Number,
+      required: true,
+    },
+    view: {
+      type: Number,
+      default: 0,
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+    shareUrl: {
       type: String,
       required: true,
     },
-    startCoordinates: {
+    listOfStops: [{ type: String }],
+    startCoordinator: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
     },
-    endCoordinates: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
+    isUser: {
+      type: Boolean,
+      default: false,
     },
-    mapUrl: {
+    from: {
       type: String,
       required: true,
     },
-    estimatedTime: {
+    to: {
       type: String,
+      required: true,
+    },
+    passRate: {
+      type: Number,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    routeCount: {
+      type: Number,
       required: true,
     },
     rating: {
       type: Number,
       default: 0,
     },
-    favoriteCount: {
-      type: Number,
-      default: 0,
-    },
-    shareUrl: {
-      type: String,
-      required: true,
-    },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export const RouteCentre = mongoose.model("RouteCentre", RouteSchema);
+export const Route =  mongoose.model("Route", routeSchema);
