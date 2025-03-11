@@ -8,7 +8,8 @@ import {
   getAllBugReports,
   addTestCenter,
   updateTestCenter,
-  deleteTestCenter
+  deleteTestCenter,
+  createRoute
 } from "../controller/admin.controller.js";
 import { isAdmin } from "../middleware/role.middleware.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
@@ -33,5 +34,8 @@ router.get("/bug-report", verifyJWT, isAdmin, getAllBugReports);
 router.post("/add-test-centre", verifyJWT, isAdmin, addTestCenter);
 router.put("/update-test-centre/:id", verifyJWT, isAdmin, updateTestCenter);
 router.delete("/delete-test-centre/:id", verifyJWT, isAdmin, deleteTestCenter);
+
+// <<<<<<<<<<<<<<<< CREATE NEW ROUTE-CENTRE FOR ADMIN >>>>>>>>>>>>>>>>>>>>
+router.post("/create-route", verifyJWT, isAdmin, createRoute);
 
 export default router;
