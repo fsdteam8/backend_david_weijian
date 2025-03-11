@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const TestCenterSchema = new Schema(
+const TestCentreSchema = new Schema(
   {
     name: {
       type: String,
@@ -26,4 +26,4 @@ const TestCenterSchema = new Schema(
   { timestamps: true }
 );
 
-export const TestCenter = mongoose.model("TestCenter", TestCenterSchema);
+export const TestCentre = mongoose.model("TestCentre", TestCentreSchema);
