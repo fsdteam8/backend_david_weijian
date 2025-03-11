@@ -2,6 +2,7 @@ import mongoose, {Schema} from "mongoose";
 
 const routeSchema = new Schema(
   {
+    testCentreId: { type: mongoose.Schema.Types.ObjectId, ref: 'TestCentre', required: true },
     TestCentreName: {
       type: String,
       required: true,
@@ -47,7 +48,7 @@ const routeSchema = new Schema(
       type: String,
       required: true,
     },
-    routeCount: {
+    totalRoute: {
       type: Number,
       required: true,
     },

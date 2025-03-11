@@ -1,24 +1,30 @@
 import { Route } from "../model/routeCentre.model.js";
-import { TestCenter } from "../model/testCentre.model.js";
+import { TestCentre } from "../model/testCentre.model.js";
 
-// Get specific route details by ID
-// const getRouteById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const route = await Route.findById(id);
-//     if (!route) {
-//       return res.status(404).json({ status: false, error: "Route not found" });
-//     }
-//     return res.status(200).json({
-//       status: true,
-//       message: "Route detils fetched successfully",
-//       data: route,
-//     });
-//   } catch (error) {
-//     console.error("Error getting route by ID: ", error);
-//     return res.status(500).json({ status: false, error: error.message });
-//   }
-// };
+// Get test centre details
+const getTestCentreWithRoutes = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const testCentre = await TestCentre.findById(id);
+    if (!testCentre) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Test centre not found" });
+    }
+
+    const routes = await Route.find({ testCentreId: id });
+
+    return res.status(200).json({
+      status: true,
+      message: "Test centre and routes fetched successfully",
+      data: routes,
+    });
+  } catch (error) {
+    console.log("Error getting routes for test centre", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
 
 // Increment view count for a route
 // const view = async (id) => {
@@ -52,4 +58,4 @@ import { TestCenter } from "../model/testCentre.model.js";
 //   return await route.save();
 // };
 
-export { getRouteById };
+export { getTestCentreWithRoutes };

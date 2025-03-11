@@ -2,7 +2,7 @@ import { Auth } from "../model/auth.model.js";
 import { ContactUs } from "../model/contactUs.model.js";
 import { BugReport } from "../model/bugReport.model.js";
 import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
-import { TestCenter } from "../model/testCentre.model.js";
+import { TestCentre } from "../model/testCentre.model.js";
 import { Route } from "../model/routeCentre.model.js";
 
 // Admin Login
@@ -164,7 +164,7 @@ const addTestCenter = async (req, res) => {
   const { name, passRate, routes, address, postCode } = req.body;
 
   try {
-    const newTestCenter = new TestCenter({
+    const newTestCenter = new TestCentre({
       name,
       passRate,
       routes,
@@ -186,7 +186,7 @@ const addTestCenter = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while added test centre", error);
-    return res.status(500).json({ status: false, message: err.message });
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -195,7 +195,7 @@ const updateTestCenter = async (req, res) => {
   try {
     const { id } = req.params;
     const body = req.body;
-    const updatedTestCenter = await TestCenter.findByIdAndUpdate(id, body, {
+    const updatedTestCenter = await TestCentre.findByIdAndUpdate(id, body, {
       new: true,
     });
 
@@ -218,7 +218,7 @@ const updateTestCenter = async (req, res) => {
 // Delete a Test Center
 const deleteTestCenter = async (req, res) => {
   try {
-    const user = await TestCenter.findByIdAndDelete(req.params.id);
+    const user = await TestCentre.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).json({ status: false, message: "User not found" });
     }

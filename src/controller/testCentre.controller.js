@@ -1,4 +1,4 @@
-import { TestCenter } from "../model/testCentre.model.js";
+import { TestCentre } from "../model/testCentre.model.js";
 
 // Search centre by postal code or name
 const searchTestCentres = async (req, res) => {
