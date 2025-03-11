@@ -29,7 +29,7 @@ const searchTestCentres = async (req, res) => {
 };
 
 // Get Test Center Details
-const getTestCenterDetails = async (req, res) => {
+const getTestCenterDetails = async (_, res) => {
   try {
     const testCenter = await TestCenter.find({});
     if (!testCenter) {
