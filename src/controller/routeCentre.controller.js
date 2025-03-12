@@ -26,6 +26,48 @@ const getTestCentreWithRoutes = async (req, res) => {
   }
 };
 
+const getAllRoutes = async (req, res) => {
+
+  try {
+
+    const routes = await Route.find({ isUser: true })
+
+    return res.status(200).json({
+      status: true,
+      routes
+    })
+  }
+
+  catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error, please try again later"
+    })
+  }
+}
+
+const getAllMyFavoriteRoutes = async (req, res) => {
+
+  const { userId } = req.params
+
+  try {
+
+    const favoriteRoutes = await Route.find({ isUser: true, "favorite.userId": userId })
+
+    return res.status(200).json({
+      status: true,
+      favoriteRoutes
+    })
+  }
+
+  catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error, please try again later"
+    })
+  }
+}
+
 // Increment views for a route
 const incrementViews = async (req, res) => {
   try {
@@ -39,7 +81,7 @@ const incrementViews = async (req, res) => {
     );
 
     if (!route) {
-      return res.status(404).json({status: false, message:"Route not found"});
+      return res.status(404).json({ status: false, message: "Route not found" });
     }
 
     return res.status(200).json({
@@ -49,7 +91,7 @@ const incrementViews = async (req, res) => {
     });
   } catch (error) {
     console.log("Error getting view details for route", error);
-    res.status(500).json({status: false, message: error.message});
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -90,7 +132,7 @@ const updateRating = async (req, res) => {
     console.log("Error in ratting controller", error);
     return res.status(500).json({ status: false, message: error.message });
   }
-};  
+};
 
 //  toggleFavorite
 const toggleFavorite = async (req, res) => {
@@ -127,4 +169,4 @@ const toggleFavorite = async (req, res) => {
 };
 
 
-export { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews};
+export { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews, getAllRoutes, getAllMyFavoriteRoutes };
