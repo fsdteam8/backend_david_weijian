@@ -4,6 +4,7 @@ import { BugReport } from "../model/bugReport.model.js";
 import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
 import { TestCentre } from "../model/testCentre.model.js";
 import { Route } from "../model/routeCentre.model.js";
+import {Review} from "../model/review.model.js"
 
 // Admin Login
 const adminLogin = async (req, res) => {
@@ -299,6 +300,24 @@ const deleteRoute = async (req, res) => {
     return res.status(500).json({status: false, message: error.message });
   }
 };
+
+// <<<<<<<<<<<<<<<<<<<<<<< REVIEW CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>
+const getAllReview = async (req, res)=>{
+  try {
+    const reviews = await Review.find()
+    if (!reviews) {
+      return res.status(404).json({ status: false, message: "No data found" });
+    }
+    return res.status(200).json({
+      status: true,
+      message: "Review data fetched successfully",
+      data: reviews,
+    });
+  } catch (error) {
+    console.log("Error getting reviews", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+}
 export {
   getAllUsers,
   updateUserRole,
@@ -311,5 +330,6 @@ export {
   deleteTestCenter,
   createRoute,
   updateRoute,
-  deleteRoute
+  deleteRoute,
+  getAllReview
 };
