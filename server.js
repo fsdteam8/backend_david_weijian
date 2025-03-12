@@ -18,7 +18,7 @@ import contactUsRoutes from "./src/route/contactUs.route.js";
 import bugReport from "./src/route/bugReport.route.js"
 import testCentre from "./src/route/testCentre.route.js";
 import routeCentre from "./src/route/routeCentre.route.js"
-import importRoute from "./src/route/importRoutes.route.js"
+import importRoute from "./src/route/importRoute.route.js"
 
 // Set
 app.use("/api/v1/auth", authRouter);

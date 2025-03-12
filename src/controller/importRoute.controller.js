@@ -1,4 +1,4 @@
-import { Route } from "../model/routeCentre.model"
+import { Route } from "../model/routeCentre.model.js"
 
 export const importRoute = async (req, res) => {
 
