@@ -5,7 +5,6 @@ import { TestCentre } from "../model/testCentre.model.js";
 const getTestCentreWithRoutes = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
 
     const testCentre = await TestCentre.findById(id);
     if (!testCentre) {
@@ -101,32 +100,31 @@ const toggleFavorite = async (req, res) => {
 
     const route = await Route.findById(id);
     if (!route) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Route not found" });
+      return res.status(404).json({ status: false, message: "Route not found" });
     }
 
     // Check if user already favorited
-    if (route.favorite.includes(userId)) {
-      route.favorite = route.favorite.filter(
-        (uid) => uid.toString() !== userId.toString()
-      );
+    const existingIndex = route.favorite.findIndex(
+      (fav) => fav.userId.toString() === userId.toString()
+    );
+
+    if (existingIndex !== -1) {
+      route.favorite.splice(existingIndex, 1);
     } else {
-      route.favorite.push(userId);
+      route.favorite.push({ userId });
     }
 
     await route.save();
-    return res
-      .status(200)
-      .json({
-        status: true,
-        message: "Favorite toggled",
-        data: route.favorite,
-      });
+    return res.status(200).json({
+      status: true,
+      message: "Favorite toggled",
+      data: route.favorite,
+    });
   } catch (error) {
     console.log("Error in favoriting route", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
+
 
 export { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews};
