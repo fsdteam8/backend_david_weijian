@@ -1,13 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
 import dbconfig from "./src/db/dbconfig.js";
-
-const app = express();
-
-// middleware
-app.use(express.json());
-
-dotenv.config();
+import { createServer } from 'node:http';
+import { Server } from "socket.io";
+import socketEvents from "./socketEvents.js";
+import cors from 'cors';
 
 // importing routes
 import authRouter from "./src/route/auth.route.js";
@@ -19,6 +16,31 @@ import bugReport from "./src/route/bugReport.route.js"
 import testCentre from "./src/route/testCentre.route.js";
 import routeCentre from "./src/route/routeCentre.route.js"
 import importRoute from "./src/route/importRoute.route.js"
+
+//express app
+const app = express();
+
+// socket connection
+const server = createServer(app)
+export const io = new Server(server, {
+  cors: {
+    origin: "*",
+    credentials: true
+  }
+})
+
+socketEvents(io)
+
+// middleware
+app.use(express.json());
+
+dotenv.config();
+
+//cors
+app.use(cors({
+  origin: "*",
+  credentials: true
+}))
 
 // Set
 app.use("/api/v1/auth", authRouter);
