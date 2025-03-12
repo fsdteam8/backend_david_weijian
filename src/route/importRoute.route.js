@@ -1,8 +1,9 @@
 import express from 'express'
-import { importRoute } from '../controller/importRoute.controller'
+import { importRoute } from '../controller/importRoute.controller.js'
 
-const importRoutesRouter = express.Router()
 
-importRoutesRouter.post("/", importRoute)
+const router = express.Router()
 
-export default authRouter
+router.post("/", importRoute)
+
+export default router
