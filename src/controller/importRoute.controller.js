@@ -1,3 +1,4 @@
+import { io } from "../../server.js"
 import { Route } from "../model/routeCentre.model.js"
 
 export const importRoute = async (req, res) => {
@@ -5,6 +6,11 @@ export const importRoute = async (req, res) => {
     try {
 
         const route = await Route.create(req.body)
+
+        io.emit("newRouteAdded", {
+            message: "A new route has been added, Please check the route. You can use this route.",
+            date: new Date()
+        })
 
         return res.status(201).json({
             status: true,
