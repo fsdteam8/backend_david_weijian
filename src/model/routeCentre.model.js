@@ -56,7 +56,7 @@ const routeSchema = new Schema(
       type: Number,
       default: 0,
     },
-    favorite: [{userId :{type: Schema.Types.ObjectId, ref: "Auth"} }],
+    favorite: [{ userId: { type: Schema.Types.ObjectId, ref: "Auth" } }],
     ratings: [
       {
         userId: { type: Schema.Types.ObjectId, ref: "Auth" },

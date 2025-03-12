@@ -18,6 +18,7 @@ import contactUsRoutes from "./src/route/contactUs.route.js";
 import bugReport from "./src/route/bugReport.route.js"
 import testCentre from "./src/route/testCentre.route.js";
 import routeCentre from "./src/route/routeCentre.route.js"
+import importRoute from "./src/route/importRoutes.route.js"
 
 // Set
 app.use("/api/v1/auth", authRouter);
@@ -28,6 +29,7 @@ app.use("/api/v1", contactUsRoutes)
 app.use("/api/v1/bug-report", bugReport)
 app.use("/api/v1/test-centre", testCentre)
 app.use("/api/v1/route-details", routeCentre)
+app.use("/api/v1/import-route", importRoute)
 
 // Database and port
 dbconfig()
