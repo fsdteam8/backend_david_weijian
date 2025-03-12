@@ -26,6 +26,7 @@ const getTestCentreWithRoutes = async (req, res) => {
   }
 };
 
+// Get all routes
 const getAllRoutes = async (req, res) => {
 
   try {
@@ -44,8 +45,9 @@ const getAllRoutes = async (req, res) => {
       message: "Internal server error, please try again later"
     })
   }
-}
+};
 
+// Get all favorite routes
 const getAllMyFavoriteRoutes = async (req, res) => {
 
   const { userId } = req.params
@@ -66,7 +68,7 @@ const getAllMyFavoriteRoutes = async (req, res) => {
       message: "Internal server error, please try again later"
     })
   }
-}
+};
 
 
 // Increment views for a route

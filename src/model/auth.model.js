@@ -18,7 +18,7 @@ const authSchema = new Schema({
   },
   dateOfBirth: {
     type: Date,
-    required: true,  
+    required: true,
   },
   who: {
     type: String,
@@ -27,6 +27,8 @@ const authSchema = new Schema({
   },
   googleId: {
     type: String,
+    unique: true,
+    sparse: true,
   },
   otp: {
     type: String,
