@@ -34,7 +34,7 @@ const getAllRoutes = async (req, res) => {
 
     return res.status(200).json({
       status: true,
-      routes
+      data: routes
     })
   }
 
@@ -56,7 +56,7 @@ const getAllMyFavoriteRoutes = async (req, res) => {
 
     return res.status(200).json({
       status: true,
-      favoriteRoutes
+      data: favoriteRoutes
     })
   }
 
