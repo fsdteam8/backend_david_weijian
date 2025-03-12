@@ -1,8 +1,12 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const routeSchema = new Schema(
   {
-    testCentreId: { type: mongoose.Schema.Types.ObjectId, ref: 'TestCentre', required: true },
+    testCentreId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "TestCentre",
+      required: true,
+    },
     TestCentreName: {
       type: String,
       required: true,
@@ -10,14 +14,6 @@ const routeSchema = new Schema(
     expectedTime: {
       type: Number,
       required: true,
-    },
-    view: {
-      type: Number,
-      default: 0,
-    },
-    favorite: {
-      type: Boolean,
-      default: false,
     },
     shareUrl: {
       type: String,
@@ -52,12 +48,23 @@ const routeSchema = new Schema(
       type: Number,
       required: true,
     },
+    view: {
+      type: Number,
+      default: 0,
+    },
     rating: {
       type: Number,
       default: 0,
     },
+    favorite: [{ type: Schema.Types.ObjectId, ref: "Auth" }],
+    ratings: [
+      {
+        userId: { type: Schema.Types.ObjectId, ref: "Auth" },
+        value: Number,
+      },
+    ],
   },
   { timestamps: true }
 );
 
-export const Route =  mongoose.model("Route", routeSchema);
+export const Route = mongoose.model("Route", routeSchema);
