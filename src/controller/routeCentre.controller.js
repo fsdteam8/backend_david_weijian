@@ -68,6 +68,7 @@ const getAllMyFavoriteRoutes = async (req, res) => {
   }
 }
 
+
 // Increment views for a route
 const incrementViews = async (req, res) => {
   try {
