@@ -23,7 +23,7 @@ const googleAuthSuccess = async (req, res) => {
       authData.refreshToken = refreshToken;
       await authData.save();
     } else {
-      await Auth.create({ user: userId, accessToken, refreshToken }); 
+      await Auth.create({ user: userId, refreshToken }); 
     }
 
     res.setHeader("Authorization", `Bearer ${accessToken}`);
