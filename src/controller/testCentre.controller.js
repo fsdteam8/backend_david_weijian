@@ -4,7 +4,7 @@ import { TestCentre } from "../model/testCentre.model.js";
 const searchTestCentres = async (req, res) => {
   const { search } = req.query;
   try {
-    const testCenters = await TestCenter.find({
+    const testCenters = await TestCentre.find({
       $or: [
         { name: { $regex: search, $options: "i" } },
         { postCode: { $regex: search, $options: "i" } },
@@ -31,7 +31,7 @@ const searchTestCentres = async (req, res) => {
 // Get Test Center Details
 const getTestCenterDetails = async (_, res) => {
   try {
-    const testCenter = await TestCenter.find({});
+    const testCenter = await TestCentre.find({});
     if (!testCenter) {
       return res
         .status(404)

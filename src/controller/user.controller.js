@@ -21,7 +21,7 @@ const getUserProfile = async (req, res) => {
         user: userId,
         name: user.name,
         email: user.email,
-        phone: "",
+        phone: user.phone|| undefined,
         dateOfBirth: user.dateOfBirth,
       });
 
