@@ -285,25 +285,33 @@ const verifyOtp = async (req, res) => {
 // Resend otp
 const resendOTP = async (req, res) => {
   try {
-    const { otp } = req.body;
+    const { email } = req.body;
 
-    // Find the user by otp
-    const user = await Auth.findOne({ otp });
-    if (!user)
-      return res
-        .status(404)
-        .json({ status: false, message: "User not found or OTP is incorrect" });
+    if (!email) {
+      return res.status(400).json({
+        status: false,
+        message: "Email is required to resend OTP",
+      });
+    }
 
-    // Generate new otp
+    // Find the user by email
+    const user = await Auth.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+    }
+
+    // Generate new OTP and expiration time
     const newOtp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-    // Update the otp
+    // Update OTP in the database
     user.otp = newOtp;
     user.otpExpires = otpExpires;
     await user.save();
 
-    // Send otp users email
     await sendMail(user.email, newOtp);
 
     return res.status(200).json({
@@ -311,7 +319,7 @@ const resendOTP = async (req, res) => {
       message: "OTP has been resent successfully",
     });
   } catch (error) {
-    console.log("Error while sending new otp: ", error);
+    console.error("Error while resending OTP:", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
