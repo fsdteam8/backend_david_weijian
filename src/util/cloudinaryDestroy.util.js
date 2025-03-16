@@ -2,7 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 const deleteFromCloudinary = async (publicId) => {
   try {
-    const response = cloudinary.uploader.destroy(publicId);
+    const response =await cloudinary.uploader.destroy(publicId);
     if (response.result == "ok") {
       console.log("Image deleted successfully from Cloudinary");
       return true;
