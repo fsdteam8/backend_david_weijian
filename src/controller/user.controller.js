@@ -48,7 +48,7 @@ const updateUserProfile = async (req, res) => {
 
     // Find the user's profile
     let userProfile = await UserProfile.findOne({ user: userId });
-
+  
     if (!userProfile) {
       return res.status(404).json({ message: "User profile not found" });
     }
