@@ -48,21 +48,17 @@ const updateUserProfile = async (req, res) => {
 
     // Find the user's profile
     let userProfile = await UserProfile.findOne({ user: userId });
-  
+
     if (!userProfile) {
       return res.status(404).json({ message: "User profile not found" });
     }
 
     // Handle avatar upload
     if (req.file) {
-      const filePath = req.file.path;
-
-      // Upload new avatar to Cloudinary
-      const cloudinaryResponse = await uploadOnCloudinary(filePath);
+      // Upload new avatar to Cloudinary using buffer
+      const cloudinaryResponse = await uploadOnCloudinary(req.file.buffer);
       if (!cloudinaryResponse) {
-        return res
-          .status(500)
-          .json({ message: "Failed to upload image to Cloudinary" });
+        return res.status(500).json({ message: "Failed to upload image to Cloudinary" });
       }
 
       // Delete the old avatar
@@ -71,7 +67,7 @@ const updateUserProfile = async (req, res) => {
         await deleteFromCloudinary(publicId);
       }
 
-      // Update user profile with avatar URL
+      // Update user profile with new avatar URL
       userProfile.avatar = cloudinaryResponse.url;
     }
 
@@ -95,6 +91,7 @@ const updateUserProfile = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // change password from profile
 const changePassword = async (req, res) => {
