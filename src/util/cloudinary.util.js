@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,23 +7,21 @@ cloudinary.config({
 });
 
 // Upload on Cloudinary method
-const uploadOnCloudinary = async (fileBuffer) => {
-  try {
-    const response = await cloudinary.uploader.upload_stream(
+const uploadOnCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
       { resource_type: "image" },
       (error, result) => {
         if (error) {
           console.error("Cloudinary upload error:", error);
-          return null;
+          return reject(error);
         }
-        return result;
+        resolve(result);
       }
-    ).end(fileBuffer);
-    return response;
-  } catch (error) {
-    console.error("Error uploading to Cloudinary:", error.message);
-    return null;
-  }
+    );
+    stream.end(fileBuffer);
+  });
 };
+
 
 export { uploadOnCloudinary };
