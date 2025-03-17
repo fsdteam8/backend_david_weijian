@@ -7,6 +7,10 @@ const routeSchema = new Schema(
       ref: "TestCentre",
       required: true,
     },
+    routeName: {
+      type: String,
+      required: true,
+    },
     TestCentreName: {
       type: String,
       required: true,
@@ -19,8 +23,12 @@ const routeSchema = new Schema(
       type: String,
       required: true,
     },
-    listOfStops: [{ type: String }],
+    listOfStops: [{ lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }],
     startCoordinator: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true },
+    },
+    endCoordinator: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
     },
@@ -42,10 +50,6 @@ const routeSchema = new Schema(
     },
     address: {
       type: String,
-      required: true,
-    },
-    totalRoute: {
-      type: Number,
       required: true,
     },
     view: {
