@@ -5,7 +5,7 @@ const routeSchema = new Schema(
     testCentreId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TestCentre",
-      required: true,
+      
     },
     routeName: {
       type: String,
