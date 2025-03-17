@@ -33,8 +33,8 @@ const routeSchema = new Schema(
       lng: { type: Number, required: true },
     },
     isUser: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: "user",
     },
     from: {
       type: String,
