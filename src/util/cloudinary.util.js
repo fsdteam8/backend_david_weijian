@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,36 +7,21 @@ cloudinary.config({
 });
 
 // Upload on Cloudinary method
-const uploadOnCloudinary = async (localFilePath) => {
-  try {
-    if (!localFilePath) {
-      // console.error("No file provided for upload");
-      return null;
-    }
-
-    if (!fs.existsSync(localFilePath)) {
-      console.error("File not found on local path", localFilePath);
-      return null;
-    }
-
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
-    });
-
-    // check if response has a URL then delete local file
-    if (response?.url) {
-      fs.unlinkSync(localFilePath);
-      return response;
-    } else {
-      console.error("No URL found in the Cloudinary response");
-      fs.unlinkSync(localFilePath);
-      return null;
-    }
-  } catch (error) {
-    console.error("Error uploading to Cloudinary:", error.message);
-    fs.unlinkSync(localFilePath); // Delete if failed to upload
-    return null;
-  }
+const uploadOnCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: "image" },
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          return reject(error);
+        }
+        resolve(result);
+      }
+    );
+    stream.end(fileBuffer);
+  });
 };
+
 
 export { uploadOnCloudinary };

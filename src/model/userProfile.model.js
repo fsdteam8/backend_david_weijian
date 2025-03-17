@@ -11,14 +11,13 @@ const userProfileSchema = new Schema({
     required: true,
     unique: true,
   },
-  phone: {
-    type: String,
-    unique: true,
-    sparse: true,
-    default: ""
-  },
   avatar: {
     type: String,
+    default: "",
+  },
+  phone: {
+    type: String,
+    sparse: true,
     default: "",
   },
   dateOfBirth: {
