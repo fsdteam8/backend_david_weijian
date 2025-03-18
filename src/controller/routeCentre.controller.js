@@ -47,6 +47,27 @@ const getAllRoutes = async (req, res) => {
   }
 };
 
+const getARoute = async (req, res) => {
+
+  const { id } = req.params;
+
+  try {
+    const route = await Route.findById(id);
+    if (!route) {
+      return res.status(404).json({ status: false, message: "Route not found" });
+    }
+    return res.status(200).json({
+      status: true,
+      data: route,
+    });
+  }
+
+  catch (error) {
+    console.log("Error getting route details", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
 // Get all favorite routes
 const getAllMyFavoriteRoutes = async (req, res) => {
 
@@ -98,45 +119,6 @@ const incrementViews = async (req, res) => {
   }
 };
 
-// Add a new rating for a route
-const updateRating = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user._id;
-    const { value } = req.body;
-
-    const route = await Route.findById(id);
-    if (!route) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Route not found" });
-    }
-
-    // Find existing rating by user
-    const existingRating = route.ratings.find(
-      (r) => r.userId.toString() === userId.toString()
-    );
-
-    if (existingRating) {
-      existingRating.value = value;
-    } else {
-      route.ratings.push({ userId, value });
-    }
-
-    // Calculate average rating
-    const totalRatings = route.ratings.reduce((sum, r) => sum + r.value, 0);
-    route.rating = totalRatings / route.ratings.length;
-
-    await route.save();
-    return res
-      .status(200)
-      .json({ status: true, message: "Rating updated", data: route.rating });
-  } catch (error) {
-    console.log("Error in ratting controller", error);
-    return res.status(500).json({ status: false, message: error.message });
-  }
-};
-
 //  toggleFavorite
 const toggleFavorite = async (req, res) => {
   try {
@@ -172,4 +154,4 @@ const toggleFavorite = async (req, res) => {
 };
 
 
-export { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews, getAllRoutes, getAllMyFavoriteRoutes };
+export { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute };
