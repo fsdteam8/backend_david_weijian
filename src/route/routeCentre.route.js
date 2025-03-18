@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get('/route/:id', verifyJWT, getTestCentreWithRoutes)
 router.get("/all", verifyJWT, getAllRoutes)
+router.get('/route/:id', verifyJWT, getTestCentreWithRoutes);
+router.get("/get-all-imported-routes", verifyJWT, getAllRoutes)
 router.get("/favorite/:userId", verifyJWT, getAllMyFavoriteRoutes)
 router.get("/get-a-route/:id", verifyJWT, getARoute)
 router.put('/increment-views/:id', verifyJWT, incrementViews)

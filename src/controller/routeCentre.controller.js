@@ -31,7 +31,7 @@ const getAllRoutes = async (req, res) => {
 
   try {
 
-    const routes = await Route.find({ isUser: true })
+    const routes = await Route.find({ isUser: "user" })
 
     return res.status(200).json({
       status: true,
@@ -75,7 +75,7 @@ const getAllMyFavoriteRoutes = async (req, res) => {
 
   try {
 
-    const favoriteRoutes = await Route.find({ isUser: true, "favorite.userId": userId })
+    const favoriteRoutes = await Route.find({ isUser: "user", "favorite.userId": userId })
 
     return res.status(200).json({
       status: true,
