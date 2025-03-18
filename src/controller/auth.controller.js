@@ -202,16 +202,17 @@ const refreshAccessToken = async (req, res) => {
     }
 
     // If the token is valid, generate a new access token and set the header
-    const { accessToken, newRefreshToken } =
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshToken(user._id);
 
+      console.log(newRefreshToken);
     res.setHeader("Authorization", `Bearer ${accessToken}`);
 
     return res.status(200).json({
       status: true,
       message: "Access token refreshed successfully",
       accessToken,
-      refreshToken: newRefreshToken,
+      newRefreshToken,
     });
   } catch (error) {
     console.error("Error in refresh access token:", error);
