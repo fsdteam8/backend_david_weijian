@@ -1,8 +1,9 @@
 import { Review } from "../model/review.model.js";
+import { Route } from "../model/routeCentre.model.js";
 
 const createReview = async (req, res) => {
   try {
-    const { routeId, reviewText } = req.body;
+    const { routeId, reviewText, rating } = req.body;
     const userId = req.user._id;
     const review = new Review({
       routeId,
@@ -13,6 +14,8 @@ const createReview = async (req, res) => {
     if (!review) {
       return res.status(400).json({ status: false, message: "Please fill up properly" });
     }
+
+    await Route.findByIdAndUpdate(routeId, { rating });
 
     await review.save();
 
