@@ -1,5 +1,5 @@
 import express from 'express';
-import { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute } from "../controller/routeCentre.controller.js";
+import { getTestCentreWithRoutes, toggleFavorite, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute } from "../controller/routeCentre.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js"
 
 const router = express.Router();

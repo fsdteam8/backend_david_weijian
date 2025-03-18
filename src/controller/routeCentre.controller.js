@@ -154,4 +154,4 @@ const toggleFavorite = async (req, res) => {
 };
 
 
-export { getTestCentreWithRoutes, toggleFavorite, updateRating, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute };
+export { getTestCentreWithRoutes, toggleFavorite, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute };
