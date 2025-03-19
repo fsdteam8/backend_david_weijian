@@ -5,24 +5,45 @@ const routeSchema = new Schema(
     testCentreId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TestCentre",
+      default: "",
+      set: function (value) {
+        return value === "" ? null : value;
+      },
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Auth"
+      ref: "Auth",
     },
     routeName: {
-      type: String
+      type: String,
     },
     TestCentreName: {
-      type: String
+      type: String,
+      default: "",
     },
     expectedTime: {
-      type: Number
+      type: Number,
     },
     shareUrl: {
-      type: String
+      type: String,
     },
-    listOfStops: [{ lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }],
+    listOfStops: [
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+      { lat: Number, lng: Number },
+    ],
     startCoordinator: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
@@ -34,7 +55,7 @@ const routeSchema = new Schema(
     isUser: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
     from: {
       type: String,
@@ -61,9 +82,10 @@ const routeSchema = new Schema(
         rating: { type: Number, default: 0 },
         reviewMessage: { type: String, default: "" },
         userId: {
-          type: Schema.Types.ObjectId, ref: "Auth"
-        }
-      }
+          type: Schema.Types.ObjectId,
+          ref: "Auth",
+        },
+      },
     ],
     favorite: [{ userId: { type: Schema.Types.ObjectId, ref: "Auth" } }],
   },
