@@ -72,12 +72,9 @@ app.use("/api/v1/bug-report", bugReport);
 app.use("/api/v1/test-centre", testCentre);
 app.use("/api/v1/route-details", routeCentre);
 app.use("/api/v1/import-route", importRoute);
-<<<<<<< HEAD
 app.use("/api/v1/review", review);
 app.use("/api/v1/auth", google0Auth)
-=======
-// app.use("/api/v1/auth", google0Auth)
->>>>>>> edc5ae4dfa80a958be9e9487728076e6d61f4d07
+app.use("/api/v1/auth", google0Auth)
 
 // Database and port
 dbconfig()
