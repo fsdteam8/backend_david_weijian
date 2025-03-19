@@ -5,23 +5,22 @@ const routeSchema = new Schema(
     testCentreId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TestCentre",
-      
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Auth"
     },
     routeName: {
-      type: String,
-      required: true,
+      type: String
     },
     TestCentreName: {
-      type: String,
-      required: true,
+      type: String
     },
     expectedTime: {
-      type: Number,
-      required: true,
+      type: Number
     },
     shareUrl: {
-      type: String,
-      required: true,
+      type: String
     },
     listOfStops: [{ lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }, { lat: Number, lng: Number }],
     startCoordinator: {
@@ -56,17 +55,16 @@ const routeSchema = new Schema(
       type: Number,
       default: 0,
     },
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    favorite: [{ userId: { type: Schema.Types.ObjectId, ref: "Auth" } }],
-    ratings: [
+    reviews: [
       {
-        userId: { type: Schema.Types.ObjectId, ref: "Auth" },
-        value: Number,
-      },
+        rating: { type: Number, default: 0 },
+        reviewMessage: { type: String, default: "" },
+        userId: {
+          type: Schema.Types.ObjectId, ref: "Auth"
+        }
+      }
     ],
+    favorite: [{ userId: { type: Schema.Types.ObjectId, ref: "Auth" } }],
   },
   { timestamps: true }
 );

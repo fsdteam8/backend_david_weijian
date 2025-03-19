@@ -5,6 +5,7 @@ const TestCentreSchema = new Schema(
     name: {
       type: String,
       required: true,
+      unique: true
     },
     passRate: {
       type: String,
