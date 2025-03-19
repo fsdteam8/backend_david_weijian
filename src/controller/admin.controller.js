@@ -241,7 +241,11 @@ const deleteTestCenter = async (req, res) => {
 
 // Create a new route
 const createRoute = async (req, res) => {
+
   try {
+
+    req.body.isUser = "admin"
+
     const route = new Route(req.body);
     if (!route) {
       return res.status(400).json({
