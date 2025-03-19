@@ -5,8 +5,8 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import socketEvents from "./socketEvents.js";
 import cors from "cors";
-// import session from "express-session";
-// import passport from "./src/util/passport.util.js";
+import session from "express-session";
+import passport from "./src/util/passport.util.js";
 
 //express app
 const app = express();
@@ -29,13 +29,13 @@ app.use(express.json());
 dotenv.config();
 
 // session
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: true,
-//   })
-// );
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 //cors
 app.use(
@@ -46,8 +46,8 @@ app.use(
 );
 
 // passport middleware
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 // importing routes
 import authRouter from "./src/route/auth.route.js";
@@ -60,7 +60,7 @@ import testCentre from "./src/route/testCentre.route.js";
 import routeCentre from "./src/route/routeCentre.route.js";
 import importRoute from "./src/route/importRoute.route.js";
 import review from "./src/route/review.route.js";
-// import google0Auth from "./src/route/googleLogin.route.js"
+import google0Auth from "./src/route/googleLogin.route.js"
 
 // Set
 app.use("/api/v1/auth", authRouter);
@@ -73,7 +73,7 @@ app.use("/api/v1/test-centre", testCentre);
 app.use("/api/v1/route-details", routeCentre);
 app.use("/api/v1/import-route", importRoute);
 app.use("/api/v1/review", review);
-// app.use("/api/v1/auth", google0Auth)
+app.use("/api/v1/auth", google0Auth)
 
 // Database and port
 dbconfig()
