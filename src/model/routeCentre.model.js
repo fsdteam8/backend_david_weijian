@@ -33,7 +33,8 @@ const routeSchema = new Schema(
     },
     isUser: {
       type: String,
-      default: "user",
+      enum: ["user", "admin"],
+      default: "user"
     },
     from: {
       type: String,
