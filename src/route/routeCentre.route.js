@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/route/:id', verifyJWT, getTestCentreWithRoutes)
 router.get("/all", verifyJWT, getAllRoutes)
 router.get('/route/:id', verifyJWT, getTestCentreWithRoutes);
-router.get("/get-all-imported-routes/:userId", verifyJWT, getAllRoutesOfUser)
-router.get("/favorite/:userId", verifyJWT, getAllMyFavoriteRoutes)
+router.get("/get-all-imported-routes", verifyJWT, getAllRoutesOfUser)
+router.get("/favorite", verifyJWT, getAllMyFavoriteRoutes)
 router.get("/get-a-route/:id", verifyJWT, getARoute)
 router.put('/increment-views/:id', verifyJWT, incrementViews)
 router.put('/favorite/:id', verifyJWT, toggleFavorite)
