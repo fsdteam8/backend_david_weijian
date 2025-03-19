@@ -103,6 +103,7 @@ const getAllMyFavoriteRoutes = async (req, res) => {
 
     return res.status(200).json({
       status: true,
+      message: "Favorite routes fetched successfully",
       data: favoriteRoutes
     })
   }
