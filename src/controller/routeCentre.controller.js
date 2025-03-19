@@ -47,6 +47,30 @@ const getAllRoutes = async (req, res) => {
   }
 };
 
+const getAllRoutesOfUser = async (req, res) => {
+
+  const { userId } = req.params
+
+  try {
+
+    const routes = await Route.find({ isUser: "user", userId })
+
+    return res.status(200).json({
+      status: true,
+      message: "Routes fetched successfully",
+      data: routes
+    })
+  }
+
+  catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error, please try again later"
+    })
+  }
+}
+
+
 const getARoute = async (req, res) => {
 
   const { id } = req.params;
@@ -148,10 +172,43 @@ const toggleFavorite = async (req, res) => {
       data: route.favorite,
     });
   } catch (error) {
-    console.log("Error in favoriting route", error);
+    console.log("Error in favouriting route", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
 
+const createReview = async (req, res) => {
 
-export { getTestCentreWithRoutes, toggleFavorite, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute };
+  const { id } = req.params
+  const { reviewMessage, rating } = req.body
+  const userId = req.user._id;
+
+  const newReview = {
+    rating,
+    reviewMessage,
+    userId,
+  };
+
+  try {
+
+    const route = await Route.findById(id);
+
+    if (!route) {
+      return res.status(404).json({ message: "Route not found" });
+    }
+
+    route.reviews.push(newReview);
+
+    await route.save();
+
+    return res.status(200).json({ message: "Review added successfully", data: newReview });
+  }
+
+  catch (error) {
+    console.error("Error adding review:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+
+export { getTestCentreWithRoutes, toggleFavorite, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute, getAllRoutesOfUser, createReview };
