@@ -49,11 +49,9 @@ const getAllRoutes = async (req, res) => {
 
 const getAllRoutesOfUser = async (req, res) => {
 
-  const { userId } = req.params
-
   try {
 
-    const routes = await Route.find({ isUser: "user", userId })
+    const routes = await Route.find({ isUser: "user", userId: req.user._id })
 
     return res.status(200).json({
       status: true,
@@ -95,11 +93,9 @@ const getARoute = async (req, res) => {
 // Get all favorite routes
 const getAllMyFavoriteRoutes = async (req, res) => {
 
-  const { userId } = req.params
-
   try {
 
-    const favoriteRoutes = await Route.find({ isUser: "user", "favorite.userId": userId })
+    const favoriteRoutes = await Route.find({ isUser: "user", "favorite.userId": req.user._id })
 
     return res.status(200).json({
       status: true,
