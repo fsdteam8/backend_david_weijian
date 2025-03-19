@@ -27,7 +27,7 @@ const submitBugReport = async (req, res) => {
     }
 
     // Upload image to Cloudinary
-    const uploadedImage = await uploadOnCloudinary(req.file.path);
+    const uploadedImage = await uploadOnCloudinary(req.file.buffer);
     if (!uploadedImage) {
       return res
         .status(500)
