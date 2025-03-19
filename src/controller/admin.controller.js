@@ -4,7 +4,6 @@ import { BugReport } from "../model/bugReport.model.js";
 import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
 import { TestCentre } from "../model/testCentre.model.js";
 import { Route } from "../model/routeCentre.model.js";
-import {Review} from "../model/review.model.js"
 
 // Admin Login
 const adminLogin = async (req, res) => {
@@ -165,6 +164,12 @@ const addTestCenter = async (req, res) => {
   const { name, passRate, routes, address, postCode } = req.body;
 
   try {
+
+    const testCentre = await TestCentre.findOne({ name })
+
+    if (testCentre) {
+      return res.status(400).json({ status: false, message: "Test centre name already exists" })
+    }
     const newTestCenter = new TestCentre({
       name,
       passRate,
@@ -236,7 +241,11 @@ const deleteTestCenter = async (req, res) => {
 
 // Create a new route
 const createRoute = async (req, res) => {
+
   try {
+
+    req.body.isUser = "admin"
+
     const route = new Route(req.body);
     if (!route) {
       return res.status(400).json({
@@ -297,15 +306,23 @@ const deleteRoute = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while deleting routes", error);
-    return res.status(500).json({status: false, message: error.message });
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
 
 // <<<<<<<<<<<<<<<<<<<<<<< REVIEW CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>
-const getAllReview = async (req, res)=>{
+const getAllReview = async (req, res) => {
+
   try {
-    const reviews = await Review.find()
-    if (!reviews) {
+    const reviews = await Route.find()
+      .populate({
+        path: "reviews.userId",
+        select: "name email -_id",
+      })
+      .select("reviews routeName TestCentreName address");
+
+
+    if (!reviews || reviews.length === 0) {
       return res.status(404).json({ status: false, message: "No data found" });
     }
     return res.status(200).json({

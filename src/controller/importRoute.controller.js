@@ -5,6 +5,8 @@ export const importRoute = async (req, res) => {
 
     try {
 
+        req.body.userId = req.user._id
+
         const route = await Route.create(req.body)
 
         io.emit("newRouteAdded", {
