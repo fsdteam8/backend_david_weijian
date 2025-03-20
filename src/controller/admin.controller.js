@@ -164,11 +164,12 @@ const addTestCenter = async (req, res) => {
   const { name, passRate, routes, address, postCode } = req.body;
 
   try {
-
-    const testCentre = await TestCentre.findOne({ name })
+    const testCentre = await TestCentre.findOne({ name });
 
     if (testCentre) {
-      return res.status(400).json({ status: false, message: "Test centre name already exists" })
+      return res
+        .status(400)
+        .json({ status: false, message: "Test centre name already exists" });
     }
     const newTestCenter = new TestCentre({
       name,
@@ -193,6 +194,24 @@ const addTestCenter = async (req, res) => {
   } catch (error) {
     console.log("Error while added test centre", error);
     return res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+// Get all Test Centres
+const getAllTestCentres = async (req, res, next) => {
+  try {
+    const testCentres = await TestCentre.find();
+    if (!testCentres) {
+      return res.status(404).json({ status: false, message: "No data found" });
+    }
+    return res.status(200).json({
+      status: true,
+      message: "Test centres fetched successfully",
+      data: testCentres,
+    });
+  } catch (error) {
+    console.log("Error getting test centres", error);
+    next(error);
   }
 };
 
@@ -241,10 +260,8 @@ const deleteTestCenter = async (req, res) => {
 
 // Create a new route
 const createRoute = async (req, res) => {
-
   try {
-
-    req.body.isUser = "admin"
+    req.body.isUser = "admin";
 
     const route = new Route(req.body);
     if (!route) {
@@ -265,6 +282,30 @@ const createRoute = async (req, res) => {
   }
 };
 
+// Get all routes for a specific test centre
+const getRoutesByTestCentreId = async (req, res) => {
+  try {
+    const { testCentreId } = req.params;
+
+    const routes = await Route.find({ testCentreId });
+
+    if (!routes || routes.length === 0) {
+      return res.status(404).json({
+        status: false,
+        message: "No routes found for this test centre",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Routes fetched successfully",
+      data: routes,
+    });
+  } catch (error) {
+    console.log("Error while fetching routes by test centre ID", error);
+    return res.status(500).json({ status: false, message: error.message });
+  }
+};
 // // Update a route by ID
 const updateRoute = async (req, res) => {
   try {
@@ -312,7 +353,6 @@ const deleteRoute = async (req, res) => {
 
 // <<<<<<<<<<<<<<<<<<<<<<< REVIEW CONTROLLER FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>
 const getAllReview = async (req, res) => {
-
   try {
     const reviews = await Route.find()
       .populate({
@@ -320,7 +360,6 @@ const getAllReview = async (req, res) => {
         select: "name email -_id",
       })
       .select("reviews routeName TestCentreName address");
-
 
     if (!reviews || reviews.length === 0) {
       return res.status(404).json({ status: false, message: "No data found" });
@@ -334,7 +373,7 @@ const getAllReview = async (req, res) => {
     console.log("Error getting reviews", error);
     return res.status(500).json({ status: false, message: error.message });
   }
-}
+};
 export {
   getAllUsers,
   updateUserRole,
@@ -348,5 +387,7 @@ export {
   createRoute,
   updateRoute,
   deleteRoute,
-  getAllReview
+  getAllReview,
+  getAllTestCentres,
+  getRoutesByTestCentreId
 };
