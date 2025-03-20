@@ -12,7 +12,9 @@ import {
   createRoute,
   updateRoute,
   deleteRoute,
-  getAllReview
+  getAllReview,
+  getAllTestCentres,
+  getRoutesByTestCentreId
 } from "../controller/admin.controller.js";
 import { isAdmin } from "../middleware/role.middleware.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
@@ -35,11 +37,13 @@ router.get("/bug-report", verifyJWT, isAdmin, getAllBugReports);
 
 // <<<<<<<<<<<<<<<< TEST-CENTER ROUTE FOR ADMIN >>>>>>>>>>>>>>>>>>>>>>>>>>
 router.post("/add-test-centre", verifyJWT, isAdmin, addTestCenter);
+router.get("/all-test-centre", verifyJWT, isAdmin, getAllTestCentres);
 router.put("/update-test-centre/:id", verifyJWT, isAdmin, updateTestCenter);
 router.delete("/delete-test-centre/:id", verifyJWT, isAdmin, deleteTestCenter);
 
 // <<<<<<<<<<<<<<<< CREATE NEW ROUTE-CENTRE FOR ADMIN >>>>>>>>>>>>>>>>>>>>
 router.post("/create-route", verifyJWT, isAdmin, createRoute);
+ router.get("/get-routes-by-test-centre/:testCentreId", verifyJWT, isAdmin, getRoutesByTestCentreId);
 router.put("/update-route/:id", verifyJWT, isAdmin, updateRoute);
 router.delete("/delete-route/:id", verifyJWT, isAdmin, deleteRoute);
 
