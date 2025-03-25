@@ -59,18 +59,20 @@ import bugReport from "./src/route/bugReport.route.js";
 import testCentre from "./src/route/testCentre.route.js";
 import routeCentre from "./src/route/routeCentre.route.js";
 import importRoute from "./src/route/importRoute.route.js";
+import attemptedTestRoute from "./src/route/attemptedTest.route.js";
 import google0Auth from "./src/route/googleLogin.route.js"
 
 // Set
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/user", userProfileRoutes);
-app.use("/api/v1/admin", adminRoutes);
-app.use("/api/v1/supervisor", supervisorRoutes);
-app.use("/api/v1", contactUsRoutes);
-app.use("/api/v1/bug-report", bugReport);
-app.use("/api/v1/test-centre", testCentre);
-app.use("/api/v1/route-details", routeCentre);
-app.use("/api/v1/import-route", importRoute);
+app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/user", userProfileRoutes)
+app.use("/api/v1/admin", adminRoutes)
+app.use("/api/v1/supervisor", supervisorRoutes)
+app.use("/api/v1", contactUsRoutes)
+app.use("/api/v1/bug-report", bugReport)
+app.use("/api/v1/test-centre", testCentre)
+app.use("/api/v1/route-details", routeCentre)
+app.use("/api/v1/import-route", importRoute)
+app.use("/api/v1/attempted-test", attemptedTestRoute)
 app.use("/api/v1/auth", google0Auth)
 app.use("/api/v1/auth", google0Auth)
 
