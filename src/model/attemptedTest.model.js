@@ -19,8 +19,7 @@ const AttemptedTestSchema = new Schema(
             ref: "Route"
         },
         isCompleted: {
-            type: Boolean,
-            default: false
+            type: Boolean
         },
     },
     { timestamps: true }
