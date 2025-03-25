@@ -5,7 +5,8 @@ const TestCentreSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      index: true
     },
     passRate: {
       type: String,
@@ -21,10 +22,15 @@ const TestCentreSchema = new Schema(
     },
     postCode: {
       type: String,
-      required: true,
+      required: true
     },
   },
   { timestamps: true }
 );
+
+TestCentreSchema.index({
+  name: 1,
+  postCode: 1
+});
 
 export const TestCentre = mongoose.model("TestCentre", TestCentreSchema);
