@@ -9,7 +9,7 @@ const TestCentreSchema = new Schema(
       index: true
     },
     passRate: {
-      type: String,
+      type: Number,
       required: true,
     },
     routes: {

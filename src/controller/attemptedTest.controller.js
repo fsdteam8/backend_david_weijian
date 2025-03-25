@@ -13,8 +13,10 @@ export const createAttemptedTest = async (req, res) => {
             routeId,
             isCompleted
         });
+
         await newAttemptedTest.save();
-        res.status(201).json({
+
+        return res.status(201).json({
             status: true,
             message: "Attempted test created successfully",
             data: newAttemptedTest,
@@ -22,6 +24,6 @@ export const createAttemptedTest = async (req, res) => {
     }
 
     catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message })
     }
 }
