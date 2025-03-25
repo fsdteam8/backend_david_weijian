@@ -2,20 +2,19 @@ import { AttemptedTest } from "../model/attemptedTest.model.js";
 import { TestCentre } from "../model/testCentre.model.js";
 import { Route } from "../model/routeCentre.model.js";
 
-// Update passRate for TestCentre (Ignoring passRate === 0)
-export const calculateAndUpdateAveragePassRateForTestCentre = async (req, res, next) => {
+// Update passRate for TestCentre
+export const updateAveragePassRateForTestCentre = async (req, res, next) => {
     const { testCentreId } = req.params;
 
     try {
         const result = await AttemptedTest.aggregate([
-            { $match: { testCentreId: testCentreId, passRate: { $gt: 0 } } }, // Ignore passRate == 0
+            { $match: { testCentreId: testCentreId, passRate: { $gt: 0 } } }, 
             { $group: { _id: null, averagePassRate: { $avg: "$passRate" } } }
         ]);
 
         if (result.length > 0) {
             const averagePassRate = result[0].averagePassRate;
 
-            // PATCH -> Only update passRate field
             await TestCentre.findOneAndUpdate(
                 { _id: testCentreId },
                 { $set: { passRate: averagePassRate } },
@@ -31,20 +30,19 @@ export const calculateAndUpdateAveragePassRateForTestCentre = async (req, res, n
     }
 };
 
-// Update passRate for RouteCentre (Ignoring passRate === 0)
-export const calculateAndUpdateAveragePassRateForRouteCentre = async (req, res, next) => {
+// Update passRate for RouteCentre
+export const updateAveragePassRateForRouteCentre = async (req, res, next) => {
     const { routeId } = req.params;
 
     try {
         const result = await AttemptedTest.aggregate([
-            { $match: { routeId: routeId, passRate: { $gt: 0 } } }, // Ignore passRate == 0
+            { $match: { routeId: routeId, passRate: { $gt: 0 } } },
             { $group: { _id: null, averagePassRate: { $avg: "$passRate" } } }
         ]);
 
         if (result.length > 0) {
             const averagePassRate = result[0].averagePassRate;
 
-            // PATCH -> Only update passRate field
             await Route.findOneAndUpdate(
                 { _id: routeId },
                 { $set: { passRate: averagePassRate } },
