@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get('/search', verifyJWT, searchTestCentres);
 router.get('/details', verifyJWT, getTestCenterDetails);
-router.get("/average-pass-rate/:testCentreId", updateAveragePassRateForTestCentre);
+router.patch("/average-pass-rate/:testCentreId", updateAveragePassRateForTestCentre);
 
 export default router

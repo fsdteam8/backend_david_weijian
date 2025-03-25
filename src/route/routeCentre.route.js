@@ -14,7 +14,7 @@ router.get("/get-a-route/:id", verifyJWT, getARoute)
 router.put('/increment-views/:id', verifyJWT, incrementViews)
 router.put('/favorite/:id', verifyJWT, toggleFavorite)
 router.post('/create-review/:id', verifyJWT, createReview)
-router.get("/average-pass-rate/:routeId", updateAveragePassRateForRouteCentre);
+router.patch("/average-pass-rate/:routeId", updateAveragePassRateForRouteCentre);
 
 
 export default router
