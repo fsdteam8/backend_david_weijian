@@ -1,6 +1,9 @@
+import mongoose from "mongoose";
 import { AttemptedTest } from "../model/attemptedTest.model.js";
 import { TestCentre } from "../model/testCentre.model.js";
 import { Route } from "../model/routeCentre.model.js";
+
+const toObjectId = (id) => new mongoose.Types.ObjectId(id);
 
 // Update passRate for TestCentre
 export const updateAveragePassRateForTestCentre = async (req, res, next) => {
@@ -8,9 +11,11 @@ export const updateAveragePassRateForTestCentre = async (req, res, next) => {
 
     try {
         const result = await AttemptedTest.aggregate([
-            { $match: { testCentreId: testCentreId, passRate: { $gt: 0 } } }, 
+            { $match: { testCentreId: toObjectId(testCentreId), passRate: { $gt: 0 } } }, 
             { $group: { _id: null, averagePassRate: { $avg: "$passRate" } } }
         ]);
+
+        console.log(result);
 
         if (result.length > 0) {
             const averagePassRate = result[0].averagePassRate;
@@ -36,9 +41,10 @@ export const updateAveragePassRateForRouteCentre = async (req, res, next) => {
 
     try {
         const result = await AttemptedTest.aggregate([
-            { $match: { routeId: routeId, passRate: { $gt: 0 } } },
+            { $match: { routeId: toObjectId(routeId), passRate: { $gt: 0 } } },
             { $group: { _id: null, averagePassRate: { $avg: "$passRate" } } }
         ]);
+        console.log(result);
 
         if (result.length > 0) {
             const averagePassRate = result[0].averagePassRate;
