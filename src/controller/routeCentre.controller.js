@@ -146,33 +146,44 @@ const toggleFavorite = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
+    // Find the route by ID
     const route = await Route.findById(id);
     if (!route) {
       return res.status(404).json({ status: false, message: "Route not found" });
     }
 
-    // Check if user already favorited
+    // Check if user already favorited the route
     const existingIndex = route.favorite.findIndex(
       (fav) => fav.userId.toString() === userId.toString()
     );
 
     if (existingIndex !== -1) {
+      // If user already favorited, remove it (unfavorite)
       route.favorite.splice(existingIndex, 1);
-    } else {
-      route.favorite.push({ userId });
+      await route.save();  // Ensure saving after modification
+      return res.status(200).json({
+        status: true,
+        message: "Route unfavorited successfully",
+        data: route.favorite,
+      });
     }
 
-    await route.save();
+    // If user hasn't favorited, add to favorites
+    route.favorite.push({ userId });
+    await route.save();  // Ensure saving after modification
+
     return res.status(200).json({
       status: true,
-      message: "Favorite toggled",
+      message: "Route added to favorites successfully",
       data: route.favorite,
     });
   } catch (error) {
-    console.log("Error in favouriting route", error);
+    console.log("Error in favoriting route", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
+
+
 
 const createReview = async (req, res) => {
 
