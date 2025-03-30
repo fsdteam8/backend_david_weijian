@@ -24,7 +24,7 @@ export const importRoute = async (req, res) => {
     catch (error) {
         return res.status(500).json({
             status: false,
-            message: "Internal server error, please try again later"
+            message: error.message
         })
     }
 }
