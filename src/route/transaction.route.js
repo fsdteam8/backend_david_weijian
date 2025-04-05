@@ -5,8 +5,8 @@ import { verifyJWT } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 // Create a new transaction
-router.post('/create-transaction', verifyJWT, createTransaction);
+router.post('/create-transaction',  createTransaction);
 // Get all transactions
-router.get('/', verifyJWT, getAllTransactions);
+router.get('/', getAllTransactions);
 
 export default router;
