@@ -61,6 +61,8 @@ import routeCentre from "./src/route/routeCentre.route.js";
 import importRoute from "./src/route/importRoute.route.js";
 import attemptedTestRoute from "./src/route/attemptedTest.route.js";
 import google0Auth from "./src/route/googleLogin.route.js"
+import subscriptionRoute from "./src/route/subscription.route.js";
+import transactionRoute from "./src/route/transaction.route.js";
 
 // Set
 app.use("/api/v1/auth", authRouter)
@@ -75,6 +77,8 @@ app.use("/api/v1/import-route", importRoute)
 app.use("/api/v1/attempted-test", attemptedTestRoute)
 app.use("/api/v1/auth", google0Auth)
 app.use("/api/v1/auth", google0Auth)
+app.use("/api/v1/subscription", subscriptionRoute)
+app.use("/api/v1/transaction", transactionRoute)
 
 // Database and port
 dbconfig()
