@@ -87,7 +87,7 @@ const routeSchema = new Schema(
         },
       },
     ],
-    favorite: [{ userId: { type: Schema.Types.ObjectId, ref: "Auth" } }],
+    favorite: [{ userId: { type: Schema.Types.ObjectId, ref: "Auth" } }]
   },
   { timestamps: true }
 );

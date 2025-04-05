@@ -1,6 +1,6 @@
 import { Route } from "../model/routeCentre.model.js";
 import { TestCentre } from "../model/testCentre.model.js";
-
+import mongoose from "mongoose";
 // Get test centre details
 const getTestCentreWithRoutes = async (req, res) => {
   try {
@@ -90,29 +90,6 @@ const getARoute = async (req, res) => {
   }
 };
 
-// Get all favorite routes
-const getAllMyFavoriteRoutes = async (req, res) => {
-
-  try {
-
-    const favoriteRoutes = await Route.find({ isUser: "user", "favorite.userId": req.user._id })
-
-    return res.status(200).json({
-      status: true,
-      message: "Favorite routes fetched successfully",
-      data: favoriteRoutes
-    })
-  }
-
-  catch (error) {
-    return res.status(500).json({
-      status: false,
-      message: "Internal server error, please try again later"
-    })
-  }
-};
-
-
 // Increment views for a route
 const incrementViews = async (req, res) => {
   try {
@@ -160,7 +137,7 @@ const toggleFavorite = async (req, res) => {
     if (existingIndex !== -1) {
       // If user already favorited, remove it (unfavorite)
       route.favorite.splice(existingIndex, 1);
-      await route.save();  // Ensure saving after modification
+      await route.save();
       return res.status(200).json({
         status: true,
         message: "Route unfavorited successfully",
@@ -169,8 +146,8 @@ const toggleFavorite = async (req, res) => {
     }
 
     // If user hasn't favorited, add to favorites
-    route.favorite.push({ userId });
-    await route.save();  // Ensure saving after modification
+    route.favorite.push({ userId });  
+    await route.save();  
 
     return res.status(200).json({
       status: true,
@@ -183,7 +160,37 @@ const toggleFavorite = async (req, res) => {
   }
 };
 
+// Get all favorite routes of a user
+const getAllMyFavoriteRoutes = async (req, res) => {
 
+  console.log(req.user._id);
+  try {
+    const favoriteRoutes = await Route.find({
+      isUser: "admin",
+      "favorite.userId": req.user._id,
+    }).populate("favorite.userId");
+
+    if (!favoriteRoutes || favoriteRoutes.length === 0) {
+      return res.status(200).json({
+        status: true,
+        message: "No favorite routes found",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Favorite routes fetched successfully",
+      data: favoriteRoutes,
+    });
+  } catch (error) {
+    console.error("Error fetching favorite routes:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error, please try again later",
+    });
+  }
+};
 
 const createReview = async (req, res) => {
 
