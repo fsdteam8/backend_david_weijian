@@ -10,61 +10,84 @@ export const createAttemptedTest = async (req, res) => {
         const route = await Route.findById(routeId);
         if (!route) return res.status(404).json({ message: "Route not found" });
 
-        const passRate = route.passRate; // from predefined passRate of the route
+        const passRate = route.passRate; // pull from Route
 
-        const newAttemptedTest = new AttemptedTest({
+        const newAttempt = new AttemptedTest({
             passRate,
             testCentreId,
-            userId,
             routeId,
+            userId,
             isCompleted,
         });
 
-        await newAttemptedTest.save();
-
-        // If attempt is completed, update TestCentre passRate
-        if (isCompleted) {
-            await updateTestCentrePassRate(testCentreId, userId);
-        }
+        await newAttempt.save();
 
         return res.status(201).json({
             status: true,
             message: "Attempted test created successfully",
-            data: newAttemptedTest,
+            data: newAttempt,
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+export const updateTestCentrePassRate = async (req, res) => {
+    const { testCentreId } = req.params;
 
-const updateTestCentrePassRate = async (testCentreId, userId) => {
     try {
+        // Step 1: Get all completed attempts for this testCentre
         const completedAttempts = await AttemptedTest.find({
             testCentreId,
-            userId,
             isCompleted: true,
         }).select("routeId");
 
-        const routeIds = completedAttempts.map((attempt) => attempt.routeId);
+        if (completedAttempts.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "No completed attempts found for this testCentre.",
+            });
+        }
 
-        if (routeIds.length === 0) return;
+        // Step 2: For each attempt, get the route's passRate
+        const routeIds = completedAttempts.map(attempt => attempt.routeId);
 
         const routes = await Route.find({
-            _id: { $in: routeIds }
-        }).select("passRate");
+            _id: { $in: routeIds },
+        }).select("_id passRate");
 
-        const total = routes.reduce((sum, route) => sum + route.passRate, 0);
-        const averagePassRate = total / routes.length;
+        // Create a routeId -> passRate map for quick lookup
+        const passRateMap = {};
+        routes.forEach(route => {
+            passRateMap[route._id.toString()] = route.passRate;
+        });
 
-        await TestCentre.findByIdAndUpdate(
-            testCentreId,
-            { passRate: averagePassRate },
-            { new: true }
-        );
+        // Step 3: Calculate total passRate and average
+        let totalPassRate = 0;
 
-        console.log(`Updated TestCentre ${testCentreId} avg passRate: ${averagePassRate}`);
+        completedAttempts.forEach(attempt => {
+            const routeIdStr = attempt.routeId.toString();
+            if (passRateMap[routeIdStr] !== undefined) {
+                totalPassRate += passRateMap[routeIdStr];
+            }
+        });
+        
+        // Limit to 4 decimal places
+        const averagePassRate = Number((totalPassRate / completedAttempts.length).toFixed(2));
+
+
+        // Step 4: Update TestCentre passRate
+        await TestCentre.findByIdAndUpdate(testCentreId, {
+            passRate: averagePassRate,
+        });
+
+        return res.status(200).json({
+            status: true,
+            message: "TestCentre passRate updated successfully.",
+            averagePassRate,
+        });
+
     } catch (error) {
-        console.error("Error updating TestCentre pass rate:", error.message);
+        return res.status(500).json({ message: error.message });
     }
 };
 
@@ -95,7 +118,7 @@ export const deleteAttemptedTest = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const deletedAttemptedTest = await AttemptedTest.findOneAndDelete({
+        const deletedAttemptedTest = await AttemptedTest.findByIdAndDelete({
             _id: attemptedTestId,
             userId,
         });
