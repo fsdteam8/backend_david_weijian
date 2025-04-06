@@ -162,13 +162,11 @@ const toggleFavorite = async (req, res) => {
 
 // Get all favorite routes of a user
 const getAllMyFavoriteRoutes = async (req, res) => {
-
-  console.log(req.user._id);
   try {
     const favoriteRoutes = await Route.find({
       isUser: "admin",
       "favorite.userId": req.user._id,
-    }).populate("favorite.userId");
+    }).select("favorite.userId favorite._id");
 
     if (!favoriteRoutes || favoriteRoutes.length === 0) {
       return res.status(200).json({
