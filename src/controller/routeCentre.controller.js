@@ -160,21 +160,14 @@ const toggleFavorite = async (req, res) => {
   }
 };
 
-// Get all favorite routes of a user
-const getAllMyFavoriteRoutes = async (req, res) => {
+// Get total number of routes favorited by a specific user
+const getFavoriteRoutesByUser = async (req, res) => {
   try {
-    const favoriteRoutes = await Route.find({
-      isUser: "admin",
-      "favorite.userId": req.user._id,
-    }).select("favorite.userId favorite._id");
+    const userId = req.user._id;
 
-    if (!favoriteRoutes || favoriteRoutes.length === 0) {
-      return res.status(200).json({
-        status: true,
-        message: "No favorite routes found",
-        data: [],
-      });
-    }
+    const favoriteRoutes = await Route.find({
+      "favorite.userId": userId,
+    });
 
     return res.status(200).json({
       status: true,
@@ -224,4 +217,4 @@ const createReview = async (req, res) => {
 }
 
 
-export { getTestCentreWithRoutes, toggleFavorite, incrementViews, getAllRoutes, getAllMyFavoriteRoutes, getARoute, getAllRoutesOfUser, createReview };
+export { getTestCentreWithRoutes, toggleFavorite, incrementViews, getAllRoutes, getFavoriteRoutesByUser, getARoute, getAllRoutesOfUser, createReview };
