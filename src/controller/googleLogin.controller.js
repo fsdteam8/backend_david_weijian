@@ -1,54 +1,79 @@
-import {Auth} from "../model/auth.model.js";
+import { OAuth2Client } from "google-auth-library";
+import { Auth } from "../model/auth.model.js";
 import { generateAccessAndRefreshToken } from "../controller/auth.controller.js";
 
-// Google 0Auth success
-const googleAuthSuccess = async (req, res) => {
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleLogin = async (req, res) => {
   try {
-    if (!req.user) {
-      return res
-        .status(401)
-        .json({ status: false, message: "Google Authentication failed" });
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ status: false, message: "Missing idToken" });
     }
 
-    const userId = req.user._id;
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
 
-    // Generate Access and Refresh Tokens
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      userId
-    );
-    // Save the data
-    let authData = await Auth.findOne({ user: userId });
+    const payload = ticket.getPayload();
 
-    if (authData) {
-      authData.refreshToken = refreshToken;
-      await authData.save();
-    } else {
-      await Auth.create({ user: userId, refreshToken }); 
+    const { sub: googleId, email, name, picture: avatar } = payload;
+
+    let user = await Auth.findOne({ email });
+
+    if (!user) {
+      user = await Auth.create({
+        name,
+        email,
+        password: "google_auth",
+        dateOfBirth: new Date(),
+        googleId,
+        avatar,
+        who: "user" // Add this if needed
+      });
+    } else if (!user.googleId) {
+      // Update existing user with Google ID if not present
+      user.googleId = googleId;
+      await user.save();
     }
 
-    res.setHeader("Authorization", `Bearer ${accessToken}`);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
 
-    return res.redirect(
-      `http://localhost:3000/auth-success?accessToken=${accessToken}&refreshToken=${refreshToken}`
-    );
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "Google Login Success",
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar
+      }
+    });
   } catch (error) {
-    console.error("Google OAuth Error:", error);
-    return res
-      .status(500)
-      .json({ status: false, message: "Internal Server Error" });
+    console.error("Google Login Error:", error);
+    return res.status(500).json({ status: false, message: "Internal Server Error" });
   }
 };
 
-// Google 0Auth failure
-const googleAuthFailure = (_, res) => {
-  return res.status(401).json({status: false, message: "Google Authentication failed" });
-};
+export const logout = async (req, res) => {
+  try {
+    const { userId } = req.body;
 
-// Logout user
-const logout = (req, res) => {
-  req.logout((err) => {
-    if (err) return res.status(500).json({status: false, message: "Logout failed" });
-    return res.json({status: true, message: "Logged out successfully" });
-  });
+    await Auth.findByIdAndUpdate(userId, {
+      $set: { refreshToken: null }
+    });
+
+    return res.status(200).json({
+      status: true,
+      message: "Logged out successfully"
+    });
+  } catch (error) {
+    return res.status(500).json({ status: false, message: "Logout failed" });
+  }
 };
-export { googleAuthSuccess, googleAuthFailure, logout };
