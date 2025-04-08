@@ -76,7 +76,6 @@ app.use("/api/v1/route-details", routeCentre)
 app.use("/api/v1/import-route", importRoute)
 app.use("/api/v1/attempted-test", attemptedTestRoute)
 app.use("/api/v1/auth", google0Auth)
-app.use("/api/v1/auth", google0Auth)
 app.use("/api/v1/subscription", subscriptionRoute)
 app.use("/api/v1/transaction", transactionRoute)
 
