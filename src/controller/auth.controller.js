@@ -330,12 +330,19 @@ const resetPassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    const email = req.user.email;
-    const user = await Auth.findOne({ email });
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        status: false,
+        message: "Old password and new password are required",
+      });
+    }
+
+    // Find the user by old password
+    const user = await Auth.findOne();
     if (!user)
       return res.status(404).json({ status: false, message: "User not found" });
 
-    // Compare the pass
+    // Compare the old password
     const isOldPasswordCorrect = await user.isPasswordValid(oldPassword);
     if (!isOldPasswordCorrect)
       return res
@@ -352,7 +359,7 @@ const resetPassword = async (req, res) => {
       message: "Password updated successfully",
     });
   } catch (error) {
-    console.log("Error while reseting password: ", error);
+    console.log("Error while resetting password: ", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
