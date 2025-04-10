@@ -20,6 +20,6 @@ router.post("/refresh-accessToken", refreshAccessToken);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp", verifyOtp);
 router.post("/resend-otp", resendOTP);
-router.post("/reset-password", verifyJWT, resetPassword);
+router.post("/reset-password", resetPassword);
 
 export default router;
