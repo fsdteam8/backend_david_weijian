@@ -1,27 +1,12 @@
 import dotenv from "dotenv";
 import express from "express";
 import dbconfig from "./src/db/dbconfig.js";
-import { createServer } from "node:http";
-import { Server } from "socket.io";
-import socketEvents from "./socketEvents.js";
 import cors from "cors";
 import session from "express-session";
 import passport from "./src/util/passport.util.js";
 
 //express app
 const app = express();
-
-// socket connection
-const server = createServer(app);
-export const io = new Server(server, {
-  cors: {
-    origin: "*",
-    credentials: true,
-  },
-});
-
-// socket
-socketEvents(io);
 
 // middleware
 app.use(express.json());
