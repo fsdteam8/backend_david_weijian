@@ -5,6 +5,10 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import {Auth} from "../model/auth.model.js";
 
 
+console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
+console.log("CALLBACK_URL:", process.env.CALLBACK_URL);
+
 passport.use(
   new GoogleStrategy(
     {
