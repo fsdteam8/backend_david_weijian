@@ -2,7 +2,6 @@
 node_modules/
 
 # Environment variables
-.env
 
 # Logs
 *.log
@@ -19,3 +18,4 @@ Thumbs.db
 
 # Testing
 coverage/
+config.bat
