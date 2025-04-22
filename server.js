@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import dbconfig from "./src/db/dbconfig.js";
 import cors from "cors";
@@ -11,7 +12,7 @@ const app = express();
 // middleware
 app.use(express.json());
 
-dotenv.config();
+
 
 // session
 app.use(
